@@ -2,7 +2,8 @@
 
 require_relative "n1_loader/version"
 
-module N1Loader
-  class Error < StandardError; end
-  # Your code goes here...
+require_relative "n1_loader/loader"
+require_relative "n1_loader/loadable"
+
+module N1Loader # :nodoc:
 end
