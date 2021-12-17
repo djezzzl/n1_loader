@@ -31,10 +31,10 @@ RSpec.describe N1Loader do
     end
   end
 
-  context 'with custom loader' do
+  context "with custom loader" do
     let(:object) { klass.new }
 
-    it 'works' do
+    it "works" do
       expect(object.something).to eq([object])
     end
   end
