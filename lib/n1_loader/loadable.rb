@@ -1,6 +1,30 @@
 # frozen_string_literal: true
 
 module N1Loader
+  # The module to be included to the class to define associated loaders.
+  #
+  #   class Example
+  #     include N1Loader::Loadable
+  #
+  #     # with inline loader
+  #     n1_loader :something do |elements|
+  #       elements.each_with_object({}) do |element, hash|
+  #         hash[element] = element.calculate_something
+  #       end
+  #     end
+  #
+  #     # with custom loader
+  #     n1_loader :something, MyLoader
+  #   end
+  #
+  #   # custom loader
+  #   class MyLoader < N1Loader::Loader
+  #     def perform(elements)
+  #       elements.each_with_object({}) do |element, hash|
+  #         hash[element] = element.calculate_something
+  #       end
+  #     end
+  #   end
   module Loadable
     def n1_loader(name)
       send("#{name}_loader")
@@ -14,12 +38,12 @@ module N1Loader
       base.extend(ClassMethods)
     end
 
-    module ClassMethods
+    module ClassMethods # :nodoc:
       def n1_loader(name)
         send("#{name}_loader")
       end
 
-      def n1_load(name, loader = nil, &block)
+      def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength
         loader ||= Class.new(N1Loader::Loader) do
           define_method(:perform, &block)
         end
