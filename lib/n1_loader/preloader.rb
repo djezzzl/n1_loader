@@ -15,12 +15,13 @@ module N1Loader
     end
 
     def preload(*keys)
-      keys.flatten(1).each do |key|
+      keys.flatten(1).flat_map do |key|
         elements
           .group_by { |element| element.class.n1_loader(key) }
-          .each do |loader_class, grouped_elements|
+          .map do |loader_class, grouped_elements|
             loader = loader_class.new(grouped_elements)
             grouped_elements.each { |grouped_element| grouped_element.n1_loader_set(key, loader) }
+            loader
           end
       end
     end

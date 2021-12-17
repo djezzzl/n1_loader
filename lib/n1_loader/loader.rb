@@ -18,6 +18,10 @@ module N1Loader
       @loaded ||= perform(elements)
     end
 
+    def preloaded_records
+      @preloaded_records ||= loaded.values
+    end
+
     def for(element)
       raise NotLoaded, "The data was not preloaded for the given element" unless elements.include?(element)
 
