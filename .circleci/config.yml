@@ -44,9 +44,6 @@ jobs:
           name: Install the gems specified by the Gemfile
           command: bundle install
       - run:
-          name: Run E2E
-          command: ruby spec/n1_loader/integration_tests/runner.rb
-      - run:
           name: Run RSpec
           command: |
             bundle exec rspec --profile 10 \
