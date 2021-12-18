@@ -11,7 +11,7 @@ module N1Loader
             loader = instance_variable_get(loader_variable_name)
 
             return loader if loader
-            if ContextAdapter.new(lazy_preload_context).try_preload_lazily(name)
+            if respond_to?(:lazy_preload_context) && ContextAdapter.new(lazy_preload_context).try_preload_lazily(name)
               return instance_variable_get(loader_variable_name)
             end
 
