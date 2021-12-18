@@ -3,6 +3,16 @@
 [![CircleCI][1]][2]
 [![Gem Version][3]][4]
 
+Are you tired of fixing [N+1 issues][7]? Does it feel unnatural to you to fix it case by case in places where you need the data?
+We have a solution for you! [N1Loader][8] is designed to solve the issue for good!
+
+It has many benefits:
+- it loads data lazily (even when you initialized preloading)
+- it supports shared loaders between multiple classes
+- it has an integration with [ActiveRecord][5] which makes it brilliant ([example](#activerecord))
+- it has an integration with [ArLazyPreload][6] which makes it excellent ([example](#arlazypreload))
+
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -44,6 +54,15 @@ class MyLoader < N1Loader::Loader
     elements.group_by(&:itself)
   end
 end
+
+# For single object
+ex = Example.new
+ex.anything 
+
+# For multiple objects without N+1
+objects = [Example.new, Example.new]
+N1Loader::Preloader.new(objects).preload(:anything)
+objects.map(&:anything)
 ```
 
 ### [ActiveRecord][5]
@@ -135,3 +154,5 @@ Copyright (c) Evgeniy Demin. See [LICENSE.txt](LICENSE.txt) for further details.
 [4]: https://badge.fury.io/rb/n1_loader
 [5]: https://github.com/rails/rails/tree/main/activerecord
 [6]: https://github.com/DmitryTsepelev/ar_lazy_preload
+[7]: https://stackoverflow.com/questions/97197/what-is-the-n1-selects-problem-in-orm-object-relational-mapping
+[8]: https://github.com/djezzzl/n1_loader
