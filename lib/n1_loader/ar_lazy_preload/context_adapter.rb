@@ -13,7 +13,7 @@ module N1Loader
       end
 
       def try_preload_lazily(association_name)
-        return unless context.send(:association_needs_preload?, association_name)
+        return unless context&.send(:association_needs_preload?, association_name)
 
         perform_preloading(association_name)
       end
