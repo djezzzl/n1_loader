@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require "n1_loader"
+require "db-query-matchers"
+
+DBQueryMatchers.configure do |config|
+  config.schemaless = true
+end
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

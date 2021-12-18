@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-require "db-query-matchers"
-
 require_relative "../lib/n1_loader/active_record"
-
-DBQueryMatchers.configure do |config|
-  config.schemaless = true
-end
 
 RSpec.describe "N1Loader ActiveRecord integration" do
   before do
