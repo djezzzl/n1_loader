@@ -142,7 +142,7 @@ Everyone interacting in the N1Loader project's codebases, issue trackers, chat r
 
 ## Changelog
 
-*FactoryTrace*'s changelog is available [here](CHANGELOG.md).
+*N1Loader*'s changelog is available [here](CHANGELOG.md).
 
 ## Copyright
 
