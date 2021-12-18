@@ -65,9 +65,6 @@ jobs:
       - attach_workspace:
           at: ~/n1_loader
       - run:
-          name: Use gemfiles/rubocop.gemfile as the Gemfile
-          command: bundle config --global gemfile gemfiles/rubocop.gemfile
-      - run:
           name: Install the gems specified by the Gemfile
           command: bundle install
       - run:
