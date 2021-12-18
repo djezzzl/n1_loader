@@ -46,9 +46,7 @@ class MyLoader < N1Loader::Loader
 end
 ```
 
-### ActiveRecord
-
-[ActiveRecord][5]
+### ActiveRecord [link][5]
 
 ```ruby
 class User < ActiveRecord::Base
@@ -77,9 +75,7 @@ N1Loader::Preloader.new(users).preload(:orders_count)
 users.map(&:orders_count)
 ```
 
-### ArLazyPreload
-
-[ArLazyPreload][6]
+### ArLazyPreload [link][6]
 
 ```ruby
 class User < ActiveRecord::Base
