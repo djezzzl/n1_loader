@@ -71,6 +71,8 @@ module N1Loader
         define_method(name) do
           send(loader_name).for(self)
         end
+
+        [name, loader_name, loader_variable_name]
       end
     end
   end
