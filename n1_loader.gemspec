@@ -21,4 +21,10 @@ Gem::Specification.new do |spec|
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features)/}) }
   end
   spec.require_paths = ["lib"]
+
+  spec.add_development_dependency "activerecord", "~> 6.0"
+  spec.add_development_dependency "db-query-matchers", "~> 0.10"
+  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "rubocop", "~> 1.7"
+  spec.add_development_dependency "sqlite3", "~> 1.3"
 end

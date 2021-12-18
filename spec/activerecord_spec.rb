@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
+require "db-query-matchers"
+
 require_relative "../lib/n1_loader/active_record"
+
+DBQueryMatchers.configure do |config|
+  config.schemaless = true
+end
 
 RSpec.describe "N1Loader ActiveRecord integration" do
   before do
@@ -109,11 +115,15 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     end
 
     it "works" do
-      expect { objects.map(&:data) }.to change(entity_class, :count).from(0).to(1)
-      expect { objects.map(&:data) }.not_to change(entity_class, :count)
+      expect do
+        expect { objects.map(&:data) }.to change(entity_class, :count).from(0).to(1)
+        expect { objects.map(&:data) }.not_to change(entity_class, :count)
 
-      expect(objects.first.data).to eq([objects.first])
-      expect(objects.last.data).to eq([objects.last])
+        expect(objects.first.data).to eq([objects.first])
+        expect(objects.last.data).to eq([objects.last])
+      end
+        .to make_database_queries(matching: /entities/, count: 1)
+        .and make_database_queries(count: 1)
     end
   end
 
@@ -126,11 +136,16 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     end
 
     it "works" do
-      expect { objects.map(&:company).map(&:data) }.to change(company_class, :count).from(0).to(1)
-      expect { objects.map(&:company).map(&:data) }.not_to change(company_class, :count)
+      expect do
+        expect { objects.map(&:company).map(&:data) }.to change(company_class, :count).from(0).to(1)
+        expect { objects.map(&:company).map(&:data) }.not_to change(company_class, :count)
 
-      expect(objects.first.company.data).to eq(objects.first)
-      expect(objects.last.company.data).to eq(objects.last)
+        expect(objects.first.company.data).to eq(objects.first)
+        expect(objects.last.company.data).to eq(objects.last)
+      end
+        .to make_database_queries(matching: /entities/, count: 2)
+        .and make_database_queries(matching: /companies/, count: 1)
+        .and make_database_queries(count: 3)
     end
   end
 
@@ -143,11 +158,16 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     end
 
     it "works" do
-      expect { objects.map(&:data).map(&:company) }.to change(company_class, :count).from(0).to(1)
-      expect { objects.map(&:data).map(&:company) }.not_to change(company_class, :count)
+      expect do
+        expect { objects.map(&:data).map(&:company) }.to change(company_class, :count).from(0).to(1)
+        expect { objects.map(&:data).map(&:company) }.not_to change(company_class, :count)
 
-      expect(objects.first.data.company.id).to eq(objects.first.id)
-      expect(objects.last.data.company.id).to eq(objects.last.id)
+        expect(objects.first.data.company.id).to eq(objects.first.id)
+        expect(objects.last.data.company.id).to eq(objects.last.id)
+      end
+        .to make_database_queries(matching: /entities/, count: 1)
+        .and make_database_queries(matching: /companies/, count: 2)
+        .and make_database_queries(count: 3)
     end
   end
 end
