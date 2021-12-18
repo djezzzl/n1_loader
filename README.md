@@ -4,7 +4,9 @@
 [![Gem Version][3]][4]
 
 Are you tired of fixing [N+1 issues][7]? Does it feel unnatural to you to fix it case by case in places where you need the data?
-We have a solution for you! [N1Loader][8] is designed to solve the issue for good!
+We have a solution for you! 
+
+[N1Loader][8] is designed to solve the issue for good!
 
 It has many benefits:
 - it loads data lazily (even when you initialized preloading)
