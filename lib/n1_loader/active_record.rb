@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../n1_loader'
+require_relative "../n1_loader"
 
 require "active_record"
 
