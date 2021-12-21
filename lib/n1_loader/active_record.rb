@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../n1_loader"
+
 require "active_record"
 
 require_relative "active_record/associations_preloader"

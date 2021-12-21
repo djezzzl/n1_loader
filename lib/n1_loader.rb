@@ -2,9 +2,9 @@
 
 require_relative "n1_loader/version"
 
-require_relative "n1_loader/loader"
-require_relative "n1_loader/loadable"
-require_relative "n1_loader/preloader"
+require_relative "n1_loader/core/loader"
+require_relative "n1_loader/core/loadable"
+require_relative "n1_loader/core/preloader"
 
 module N1Loader # :nodoc:
   class Error < StandardError; end
