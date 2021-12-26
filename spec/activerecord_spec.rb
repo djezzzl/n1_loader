@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require "active_record"
+
+return if ActiveRecord::VERSION::MAJOR >= 7
+
 require_relative "../lib/n1_loader/active_record"
 
 RSpec.describe "N1Loader ActiveRecord integration" do

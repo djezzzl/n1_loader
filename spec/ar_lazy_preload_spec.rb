@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "../lib/n1_loader/ar_lazy_preload"
-
 require "rails"
-require "ar_lazy_preload"
+
+return if ActiveRecord::VERSION::MAJOR >= 7
+
+require_relative "../lib/n1_loader/ar_lazy_preload"
 
 ActiveSupport.on_load(:active_record) do
   ActiveRecord::Base.include(ArLazyPreload::Base)
