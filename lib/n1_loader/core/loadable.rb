@@ -49,7 +49,11 @@ module N1Loader
 
       def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         loader ||= Class.new(N1Loader::Loader) do
-          define_method(:perform, &block)
+          if block && block.arity == 1
+            define_method(:perform, &block)
+          else
+            class_eval(&block)
+          end
         end
 
         loader_name = "#{name}_loader"

@@ -15,7 +15,11 @@ module N1Loader
     end
 
     def loaded
-      @loaded ||= perform(elements)
+      @loaded ||= if elements.size == 1 && respond_to?(:single)
+                    {elements.first => single(elements.first)}
+                  else
+                    perform(elements)
+                  end
     end
 
     def preloaded_records

@@ -13,6 +13,7 @@ It has many benefits:
 - it loads data [lazily](#lazy-loading)
 - it supports [shareable loaders](#shareable-loaders) between multiple classes
 - it supports [reloading](#reloading)
+- it supports optimized [single object loading](#optimized-single-case)
 - it has an integration with [ActiveRecord][5] which makes it brilliant ([example](#activerecord))
 - it has an integration with [ArLazyPreload][6] which makes it excellent ([example](#arlazypreload))
 
@@ -160,6 +161,34 @@ loader = MyLoader.new(objects)
 objects.each do |object|
   loader.for(object) # => it has no N+1 and it doesn't require to be injected in the class
 end
+```
+
+### Optimized single case
+
+```ruby
+class Example
+  include N1Loader::Loadable
+  
+  n1_loader :something do # no arguments passed to the block, so we can override both perform and single.
+    def perform(elements)
+      # Has to return a hash that has keys as element from elements
+      elements.group_by(&:itself)
+    end
+    
+    # Optimized for single object loading
+    def single(element)
+      # Just return a value you want to have for this element
+      element
+    end
+  end
+end
+
+object = Example.new
+object.something # single will be used here
+
+objects = [Example.new, Example.new]
+N1Loader::Preloader.new(objects).preload(:something)
+objects.map(&:something) # perform will be used once without N+1
 ```
 
 ## Integrations
