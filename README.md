@@ -25,15 +25,17 @@ gem 'n1_loader'
 
 You can add integration with [ActiveRecord][5] by:
 ```ruby
-require 'n1_loader/active_record'
+gem 'n1_loader', require: 'n1_loader/active_record'
 ```
 
 You can add the integration with [ActiveRecord][5] and [ArLazyPreload][6] by:
 ```ruby
-require 'n1_loader/ar_lazy_preload'
+gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
 ```
 
 ## Usage
+
+**Supported Ruby version:** 2.5, 2.6, 2.7, 3.0, and latest.
 
 ```ruby
 class Example
@@ -68,6 +70,10 @@ objects.map(&:anything)
 ```
 
 ### [ActiveRecord][5]
+
+**Supported versions**: 5, 6. 
+
+_Note_: Please open an issue if you interested in support of version 7 or other.
 
 ```ruby
 class User < ActiveRecord::Base
