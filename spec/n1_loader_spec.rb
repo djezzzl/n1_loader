@@ -39,21 +39,21 @@ RSpec.describe N1Loader do
         end
 
         def perform(_elements)
-          raise 'unknown'
+          raise "unknown"
         end
       end
     end
   end
 
-  describe 'optimization for single object' do
-    it 'uses optimization' do
+  describe "optimization for single object" do
+    it "uses optimization" do
       element = klass.new
       expect(element.anything).to eq([element])
 
       elements = [klass.new, klass.new]
       N1Loader::Preloader.new(elements).preload(:anything)
 
-      expect { elements.map(&:anything) }.to raise_error(StandardError, 'unknown')
+      expect { elements.map(&:anything) }.to raise_error(StandardError, "unknown")
     end
   end
 

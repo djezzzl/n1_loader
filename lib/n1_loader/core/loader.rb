@@ -16,7 +16,7 @@ module N1Loader
 
     def loaded
       @loaded ||= if elements.size == 1 && respond_to?(:single)
-                    {elements.first => single(elements.first)}
+                    { elements.first => single(elements.first) }
                   else
                     perform(elements)
                   end
