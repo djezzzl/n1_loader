@@ -6,7 +6,7 @@ module N1Loader
     class ContextAdapter
       attr_reader :context
 
-      delegate :records, :auto_preload?, to: :context
+      delegate_missing_to :context
 
       def initialize(context)
         @context = context

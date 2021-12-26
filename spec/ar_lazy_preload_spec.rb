@@ -124,5 +124,12 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
       .to make_database_queries(matching: /entities/, count: 1)
       .and make_database_queries(matching: /companies/, count: 2)
       .and make_database_queries(count: 3)
+
+    expect do
+      company_class.lazy_preload(data: :company).map(&:data).map(&:company)
+    end
+      .to make_database_queries(matching: /entities/, count: 1)
+      .and make_database_queries(matching: /companies/, count: 2)
+      .and make_database_queries(count: 3)
   end
 end
