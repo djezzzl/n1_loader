@@ -3,5 +3,6 @@
 source "https://rubygems.org"
 
 gem "activerecord", "~> 7"
+gem "db-query-matchers", git: "https://github.com/tagliala/db-query-matchers", ref: "11863"
 
 gemspec path: "../"
