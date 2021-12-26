@@ -47,7 +47,7 @@ module N1Loader
         respond_to?("#{name}_loader")
       end
 
-      def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength
+      def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         loader ||= Class.new(N1Loader::Loader) do
           define_method(:perform, &block)
         end
