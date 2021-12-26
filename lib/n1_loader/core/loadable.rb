@@ -47,7 +47,7 @@ module N1Loader
         respond_to?("#{name}_loader")
       end
 
-      def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength
+      def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         loader ||= Class.new(N1Loader::Loader) do
           define_method(:perform, &block)
         end
@@ -59,16 +59,21 @@ module N1Loader
           loader
         end
 
+        define_method("#{loader_name}_reload") do
+          instance_variable_set(loader_variable_name, self.class.send(loader_name).new([self]))
+        end
+
         define_method("#{loader_name}=") do |loader_instance|
           instance_variable_set(loader_variable_name, loader_instance)
         end
 
         define_method(loader_name) do
-          instance_variable_get(loader_variable_name) ||
-            instance_variable_set(loader_variable_name, self.class.send(loader_name).new([self]))
+          instance_variable_get(loader_variable_name) || send("#{loader_name}_reload")
         end
 
-        define_method(name) do
+        define_method(name) do |reload: false|
+          send("#{loader_name}_reload") if reload
+
           send(loader_name).for(self)
         end
 

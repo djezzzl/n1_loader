@@ -9,11 +9,11 @@ We have a solution for you!
 [N1Loader][8] is designed to solve the issue for good!
 
 It has many benefits:
-- it loads data lazily (even when you initialized preloading)
-- it supports shared loaders between multiple classes
+- it loads data [lazily](#lazy-loading)
+- it supports [shareable loaders](#shareable-loaders) between multiple classes
+- it supports [reloading](#reloading)
 - it has an integration with [ActiveRecord][5] which makes it brilliant ([example](#activerecord))
 - it has an integration with [ArLazyPreload][6] which makes it excellent ([example](#arlazypreload))
-
 
 ## Installation
 
@@ -68,6 +68,79 @@ objects = [Example.new, Example.new]
 N1Loader::Preloader.new(objects).preload(:anything)
 objects.map(&:anything)
 ```
+
+### Lazy loading
+
+```ruby
+class Example
+  include N1Loader::Loadable
+  
+  n1_loader :anything do |elements|
+    elements.group_by(&:itself)
+  end
+end
+
+object = Example.new # => nothing was done for loading
+object.anything # => first time loading
+
+objects = [Example.new, Example.new] # => nothing was done for loading
+N1Loader::Preloader.new([objects]).preload(:anything) # => we only initial loader but didn't perform it yet
+objects.map(&:anything) # => loading happen for the first time (without N+1)
+```
+
+
+### Shareable loaders
+
+```ruby
+class MyLoader < N1Loader::Loader
+  def perform(elements)
+    elements.group_by(&:itself)
+  end
+end
+
+class A
+  include N1Loader::Loadable
+  
+  n1_loader :anything, MyLoader
+end
+
+class B
+  include N1Loader::Loadable
+  
+  n1_loader :something, MyLoader
+end
+
+A.new.anything # => works
+B.new.something  # => works
+```
+
+### Reloading
+
+```ruby
+class Example
+  include N1Loader::Loadable
+
+  # with inline loader
+  n1_loader :anything do |elements|
+    # Has to return a hash that has keys as element from elements
+    elements.group_by(&:itself)
+  end
+end
+
+object = Example.new
+object.anything # => loader is executed first time and value was cached
+object.anything(reload: true) # => loader is executed again and a new value was cached
+
+objects = [Example.new, Example.new]
+
+N1Loader::Preloader.new(objects).preload(:anything) # => loader was initialized but not yet executed
+objects.map(&:anything) # => loader was executed first time without N+1 issue and values were cached
+
+N1Loader::Preloader.new(objects).preload(:anything) # => loader was initialized again but not yet executed
+objects.map(&:anything) # => new loader was executed first time without N+1 issue and new values were cached
+```
+
+## Integrations
 
 ### [ActiveRecord][5]
 

@@ -31,6 +31,33 @@ RSpec.describe N1Loader do
     end
   end
 
+  describe "reloading" do
+    context "with preloading" do
+      let(:objects) { [klass.new, klass.new] }
+
+      it "reloads cached data" do
+        N1Loader::Preloader.new(objects).preload(:data)
+
+        expect { objects.map(&:data) }.to change(klass, :count).from(0).to(1)
+
+        N1Loader::Preloader.new(objects).preload(:data)
+        expect { objects.map(&:data) }.to change(klass, :count).from(1).to(2)
+        expect { objects.map(&:data) }.not_to change(klass, :count)
+      end
+    end
+
+    context "without preloading" do
+      let(:object) { klass.new }
+
+      it "reloads cached data" do
+        expect { object.data }.to change(klass, :count).from(0).to(1)
+        expect { object.data(reload: true) }.to change(klass, :count).from(1).to(2)
+        expect { object.data(reload: false) }.not_to change(klass, :count)
+        expect { object.data }.not_to change(klass, :count)
+      end
+    end
+  end
+
   context "with custom loader" do
     let(:object) { klass.new }
 
