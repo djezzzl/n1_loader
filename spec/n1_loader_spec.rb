@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 RSpec.describe N1Loader do
-  let(:klass) do
-    custom_loader = Class.new(N1Loader::Loader) do
+  let(:loader) do
+    Class.new(N1Loader::Loader) do
       def perform(elements)
         elements.group_by(&:itself)
       end
     end
+  end
+
+  let(:klass) do
+    custom_loader = loader
 
     Class.new do
       include N1Loader::Loadable
@@ -28,6 +32,18 @@ RSpec.describe N1Loader do
       end
 
       n1_load :something, custom_loader
+    end
+  end
+
+  describe "isolated loaders" do
+    it "does not need injection" do
+      elements = [1, 2]
+
+      instance = loader.new(elements)
+
+      elements.each do |element|
+        expect(instance.for(element)).to eq([element])
+      end
     end
   end
 
