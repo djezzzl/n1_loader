@@ -87,8 +87,7 @@ workflows:
               ]
               gemfile: [
                 "gemfiles/ar_5_latest.gemfile",
-                "gemfiles/ar_6_latest.gemfile",
-                "gemfiles/ar_7_latest.gemfile"
+                "gemfiles/ar_6_latest.gemfile"
               ]
             exclude:
               - ruby-version: "3.0"
