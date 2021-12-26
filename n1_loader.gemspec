@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "activerecord", ">= 5"
   spec.add_development_dependency "ar_lazy_preload", "~> 0.7"
   spec.add_development_dependency "db-query-matchers", "~> 0.10"
-  spec.add_development_dependency "rails", "~> 6.0"
+  spec.add_development_dependency "rails", ">= 5"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4"
   spec.add_development_dependency "rubocop", "~> 1.7"
