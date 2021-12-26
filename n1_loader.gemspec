@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "activerecord", "~> 6.0"
+  spec.add_development_dependency "activerecord", ">= 5"
   spec.add_development_dependency "ar_lazy_preload", "~> 0.7"
   spec.add_development_dependency "db-query-matchers", "~> 0.10"
   spec.add_development_dependency "rails", "~> 6.0"

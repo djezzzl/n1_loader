@@ -86,7 +86,9 @@ workflows:
                 "latest"
               ]
               gemfile: [
-                "gemfiles/ar_6_latest.gemfile"
+                "gemfiles/ar_5_latest.gemfile",
+                "gemfiles/ar_6_latest.gemfile",
+                "gemfiles/ar_7_latest.gemfile"
               ]
           name: << matrix.gemfile >>-build-ruby-<< matrix.ruby-version >>
       - rubocop:
