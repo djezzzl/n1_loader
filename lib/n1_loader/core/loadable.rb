@@ -8,9 +8,7 @@ module N1Loader
   #
   #     # with inline loader
   #     n1_loader :something do |elements|
-  #       elements.each_with_object({}) do |element, hash|
-  #         hash[element] = element.calculate_something
-  #       end
+  #       elements.each { |element| fulfill(element,, element.calculate_something) }
   #     end
   #
   #     # with custom loader
@@ -20,9 +18,7 @@ module N1Loader
   #   # custom loader
   #   class MyLoader < N1Loader::Loader
   #     def perform(elements)
-  #       elements.each_with_object({}) do |element, hash|
-  #         hash[element] = element.calculate_something
-  #       end
+  #       elements.each { |element| fulfill(element,, element.calculate_something) }
   #     end
   #   end
   module Loadable

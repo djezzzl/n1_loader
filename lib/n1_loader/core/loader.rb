@@ -11,9 +11,12 @@ module N1Loader
     end
 
     def for(element)
-      raise NotLoaded, "The data was not preloaded for the given element" unless elements.include?(element)
+      if loaded.empty? && elements.any?
+        raise NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method"
+      end
+      raise NotLoaded, "The data was not preloaded for the given element" unless loaded.key?(element)
 
-      loaded.compare_by_identity[element]
+      loaded[element]
     end
 
     private
@@ -24,12 +27,22 @@ module N1Loader
       raise NotImplemented, "Subclasses have to implement the method"
     end
 
+    def fulfill(element, value)
+      @loaded[element] = value
+    end
+
     def loaded
-      @loaded ||= if elements.size == 1 && respond_to?(:single)
-                    { elements.first => single(elements.first) }
-                  else
-                    perform(elements)
-                  end
+      return @loaded if @loaded
+
+      @loaded = {}.compare_by_identity
+
+      if elements.size == 1 && respond_to?(:single)
+        fulfill(elements.first, single(elements.first))
+      elsif elements.any?
+        perform(elements)
+      end
+
+      @loaded
     end
   end
 end

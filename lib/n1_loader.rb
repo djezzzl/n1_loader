@@ -10,4 +10,5 @@ module N1Loader # :nodoc:
   class Error < StandardError; end
   class NotImplemented < Error; end
   class NotLoaded < Error; end
+  class NotFilled < Error; end
 end
