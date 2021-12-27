@@ -10,6 +10,16 @@ module N1Loader
       @elements = elements
     end
 
+    def for(element)
+      raise NotLoaded, "The data was not preloaded for the given element" unless elements.include?(element)
+
+      loaded.compare_by_identity[element]
+    end
+
+    private
+
+    attr_reader :elements
+
     def perform(_elements)
       raise NotImplemented, "Subclasses have to implement the method"
     end
@@ -21,19 +31,5 @@ module N1Loader
                     perform(elements)
                   end
     end
-
-    def preloaded_records
-      @preloaded_records ||= loaded.values
-    end
-
-    def for(element)
-      raise NotLoaded, "The data was not preloaded for the given element" unless elements.include?(element)
-
-      loaded.compare_by_identity[element]
-    end
-
-    private
-
-    attr_reader :elements
   end
 end

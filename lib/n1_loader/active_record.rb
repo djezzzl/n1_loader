@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../n1_loader"
-
+require_relative "active_record/loader"
 require "active_record"
 
 ActiveSupport.on_load(:active_record) do
