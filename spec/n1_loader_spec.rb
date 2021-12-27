@@ -4,7 +4,7 @@ RSpec.describe N1Loader do
   let(:loader) do
     Class.new(N1Loader::Loader) do
       def perform(elements)
-        elements.group_by(&:itself)
+        elements.each { |element| fulfill(element, [element]) }
       end
     end
   end
@@ -28,7 +28,7 @@ RSpec.describe N1Loader do
       n1_load :data do |elements|
         elements.first.class.perform!
 
-        elements.group_by(&:itself)
+        elements.each { |element| fulfill(element, [element]) }
       end
 
       n1_load :something, custom_loader
@@ -42,6 +42,23 @@ RSpec.describe N1Loader do
           raise "unknown"
         end
       end
+    end
+  end
+
+  context "when fulfill was not used" do
+    it "throws an error" do
+      elements = [1, 2]
+
+      loader = Class.new(N1Loader::Loader) do
+        def perform(elements)
+          elements.group_by(&:itself)
+        end
+      end
+
+      expect do
+        loader.new(elements).for(elements.first)
+      end.to raise_error(N1Loader::NotFilled,
+                         "Nothing was preloaded, perhaps you forgot to use fulfill method")
     end
   end
 
@@ -66,6 +83,17 @@ RSpec.describe N1Loader do
       elements.each do |element|
         expect(instance.for(element)).to eq([element])
       end
+    end
+
+    it "checks that element was provided" do
+      elements = [1, 2]
+
+      instance = loader.new(elements)
+
+      elements.each do |element|
+        expect(instance.for(element)).to eq([element])
+      end
+      expect { instance.for(3) }.to raise_error(N1Loader::NotLoaded, "The data was not preloaded for the given element")
     end
   end
 

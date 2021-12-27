@@ -47,8 +47,7 @@ class Example
 
   # with inline loader
   n1_loader :anything do |elements|
-    # Has to return a hash that has keys as element from elements
-    elements.group_by(&:itself)
+    elements.each { |element| fulfill(element, [element]) }
   end
 
   # with custom loader
@@ -57,9 +56,8 @@ end
 
 # Custom loader that can be shared with many classes
 class MyLoader < N1Loader::Loader
-  # Has to return a hash that has keys as element from elements
   def perform(elements)
-    elements.group_by(&:itself)
+    elements.each { |element| fulfill(element, [element]) }
   end
 end
 
@@ -80,8 +78,7 @@ class Example
   include N1Loader::Loadable
   
   n1_loader :anything do |elements|
-    # Has to return a hash that has keys as element from elements
-    elements.group_by(&:itself)
+    elements.each { |element| fulfill(element, [element]) }
   end
 end
 
@@ -99,8 +96,7 @@ objects.map(&:anything) # => loading happen for the first time (without N+1)
 ```ruby
 class MyLoader < N1Loader::Loader
   def perform(elements)
-    # Has to return a hash that has keys as element from elements
-    elements.group_by(&:itself)
+    elements.each { |element| fulfill(element, [element]) }
   end
 end
 
@@ -128,8 +124,7 @@ class Example
 
   # with inline loader
   n1_loader :anything do |elements|
-    # Has to return a hash that has keys as element from elements
-    elements.group_by(&:itself)
+    elements.each { |element| fulfill(element, [element]) }
   end
 end
 
@@ -151,8 +146,7 @@ objects.map(&:anything) # => new loader was executed first time without N+1 issu
 ```ruby
 class MyLoader < N1Loader::Loader
   def perform(elements)
-    # Has to return a hash that has keys as element from elements
-    elements.group_by(&:itself)
+    elements.each { |element| fulfill(element, [element]) }
   end
 end
 
@@ -171,14 +165,13 @@ class Example
   
   n1_loader :something do # no arguments passed to the block, so we can override both perform and single.
     def perform(elements)
-      # Has to return a hash that has keys as element from elements
-      elements.group_by(&:itself)
+      elements.each { |element| fulfill(element, [element]) }
     end
     
     # Optimized for single object loading
     def single(element)
       # Just return a value you want to have for this element
-      element
+      [element]
     end
   end
 end
@@ -206,8 +199,7 @@ class User < ActiveRecord::Base
   n1_loader :orders_count do |users|
     hash = Order.where(user: users).group(:user_id).count
     
-    # hash has to have keys as initial elements
-    hash.transform_keys! { |key| users.find { |user| user.id == key } }
+    users.each { |user| fulfill(user, hash[user.id]) }
   end
 end
 
@@ -234,9 +226,8 @@ class User < ActiveRecord::Base
   
   n1_loader :orders_count do |users|
     hash = Order.where(user: users).group(:user_id).count
-    
-    # hash has to have keys as initial elements
-    hash.transform_keys! { |key| users.find { |user| user.id == key } }
+
+    users.each { |user| fulfill(user, hash[user.id]) }
   end
 end
 

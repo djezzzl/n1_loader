@@ -46,7 +46,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
 
       n1_load :data do |elements|
         elements.first.class.perform!
-        elements.group_by(&:itself)
+        elements.each { |element| fulfill(element, [element]) }
       end
     end)
   end
@@ -77,7 +77,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         elements.first.class.perform!
 
         hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
-        hash.transform_keys! { |key| elements.find { |element| element.entity_id == key } }
+        elements.each { |element| fulfill(element, hash[element.entity_id]) }
       end
     end)
   end
