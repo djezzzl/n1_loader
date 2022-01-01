@@ -9,13 +9,14 @@ module N1Loader
 
           define_method(loader_name) do
             loader = instance_variable_get(loader_variable_name)
-
             return loader if loader
+
             if respond_to?(:lazy_preload_context) && ContextAdapter.new(lazy_preload_context).try_preload_lazily(name)
               return instance_variable_get(loader_variable_name)
             end
 
-            instance_variable_set(loader_variable_name, self.class.send(loader_name).new([self]))
+            instance_variable_set(loader_variable_name,
+                                  N1Loader::LoaderCollection.new(self.class.send(loader_name), [self]))
           end
         end
       end

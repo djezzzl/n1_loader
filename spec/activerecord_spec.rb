@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe "N1Loader ActiveRecord integration" do
-  require "active_record"
-
   require_relative "../lib/n1_loader/active_record"
 
   before do
@@ -42,9 +40,11 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         end
       end
 
-      n1_load :data do |elements|
-        elements.first.class.perform!
-        elements.each { |element| fulfill(element, [element]) }
+      n1_load :data do
+        def perform(elements)
+          elements.first.class.perform!
+          elements.each { |element| fulfill(element, [element]) }
+        end
       end
     end)
   end
@@ -71,11 +71,13 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         end
       end
 
-      n1_load :data do |elements|
-        elements.first.class.perform!
+      n1_load :data do
+        def perform(elements)
+          elements.first.class.perform!
 
-        hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
-        elements.each { |element| fulfill(element, hash[element.entity_id]) }
+          hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
+          elements.each { |element| fulfill(element, hash[element.entity_id]) }
+        end
       end
     end)
   end

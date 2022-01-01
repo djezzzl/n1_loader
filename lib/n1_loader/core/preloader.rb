@@ -19,9 +19,9 @@ module N1Loader
         elements
           .group_by { |element| element.class.n1_loader(key) }
           .map do |loader_class, grouped_elements|
-            loader = loader_class.new(grouped_elements)
-            grouped_elements.each { |grouped_element| grouped_element.n1_loader_set(key, loader) }
-            loader
+            loader_collection = N1Loader::LoaderCollection.new(loader_class, grouped_elements)
+            grouped_elements.each { |grouped_element| grouped_element.n1_loader_set(key, loader_collection) }
+            loader_collection
           end
       end
     end

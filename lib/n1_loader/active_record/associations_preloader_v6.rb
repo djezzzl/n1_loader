@@ -13,7 +13,7 @@ module N1Loader
         def preloaders_for_reflection(reflection, records, scope)
           return super unless reflection.is_a?(N1LoaderReflection)
 
-          N1Loader::Preloader.new(records).preload(reflection.key)
+          N1Loader::Preloader.new(records).preload(reflection.key).map(&:with)
         end
 
         def grouped_records(association, records, polymorphic_parent)

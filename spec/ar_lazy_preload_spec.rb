@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe "N1Loader AR Lazy Preload integration" do
-  require "rails"
-
   require_relative "../lib/n1_loader/ar_lazy_preload"
 
   ActiveSupport.on_load(:active_record) do
@@ -58,10 +56,12 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
         end
       end
 
-      n1_load :data do |elements|
-        elements.first.class.perform!
+      n1_load :data do
+        def perform(elements)
+          elements.first.class.perform!
 
-        elements.each { |element| fulfill(element, [element]) }
+          elements.each { |element| fulfill(element, [element]) }
+        end
       end
     end)
   end
@@ -88,11 +88,13 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
         end
       end
 
-      n1_load :data do |elements|
-        elements.first.class.perform!
+      n1_load :data do
+        def perform(elements)
+          elements.first.class.perform!
 
-        hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
-        elements.each { |element| fulfill(element, hash[element.entity_id]) }
+          hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
+          elements.each { |element| fulfill(element, hash[element.entity_id]) }
+        end
       end
     end)
   end

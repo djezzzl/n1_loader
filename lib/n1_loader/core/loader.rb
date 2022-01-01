@@ -6,8 +6,13 @@ module N1Loader
   # Subclasses must define +perform+ method that accepts single argument
   # and returns hash where key is the element and value is what we want to load.
   class Loader
-    def initialize(elements)
+    def self.arguments_key(*args)
+      args.map(&:object_id)
+    end
+
+    def initialize(elements, *args)
       @elements = elements
+      @args = args
     end
 
     def for(element)
@@ -21,7 +26,7 @@ module N1Loader
 
     private
 
-    attr_reader :elements
+    attr_reader :elements, :args
 
     def perform(_elements)
       raise NotImplemented, "Subclasses have to implement the method"
@@ -37,9 +42,9 @@ module N1Loader
       @loaded = {}.compare_by_identity
 
       if elements.size == 1 && respond_to?(:single)
-        fulfill(elements.first, single(elements.first))
+        fulfill(elements.first, single(elements.first, *args))
       elsif elements.any?
-        perform(elements)
+        perform(elements, *args)
       end
 
       @loaded

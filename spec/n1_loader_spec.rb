@@ -25,10 +25,12 @@ RSpec.describe N1Loader do
         end
       end
 
-      n1_load :data do |elements|
-        elements.first.class.perform!
+      n1_load :data do
+        def perform(elements)
+          elements.first.class.perform!
 
-        elements.each { |element| fulfill(element, [element]) }
+          elements.each { |element| fulfill(element, [element]) }
+        end
       end
 
       n1_load :something, custom_loader
@@ -59,6 +61,106 @@ RSpec.describe N1Loader do
         loader.new(elements).for(elements.first)
       end.to raise_error(N1Loader::NotFilled,
                          "Nothing was preloaded, perhaps you forgot to use fulfill method")
+    end
+  end
+
+  describe "arguments support" do
+    let(:klass) do
+      Class.new do
+        include N1Loader::Loadable
+
+        class << self
+          def perform!
+            @count = count + 1
+          end
+
+          def count
+            @count || 0
+          end
+        end
+
+        n1_load :data do
+          def perform(elements, something, anything)
+            elements.first.class.perform!
+
+            elements.each do |element|
+              fulfill(element, [element, something, anything])
+            end
+          end
+        end
+
+        n1_load :custom_key do
+          def self.arguments_key(*_args)
+            raise "Custom key was provided"
+          end
+        end
+      end
+    end
+
+    it "has to receive all arguments" do
+      object = klass.new
+
+      expect { object.data }.to raise_error(ArgumentError)
+      expect { object.data("something") }.to raise_error(ArgumentError)
+      expect { object.data("something", anything: "anything") }.to raise_error(ArgumentError)
+
+      expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+    end
+
+    it "can have custom arguments key" do
+      expect { klass.new.custom_key }.to raise_error(StandardError, "Custom key was provided")
+    end
+
+    it "works with single" do
+      object = klass.new
+
+      expect do
+        expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+      end.to change(klass, :count)
+    end
+
+    it "works with multiple" do
+      objects = [klass.new, klass.new]
+      N1Loader::Preloader.new(objects).preload(:data)
+
+      expect do
+        objects.each do |object|
+          expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+        end
+      end.to change(klass, :count).from(0).to(1)
+    end
+
+    it "performs based on arguments" do
+      objects = [klass.new, klass.new]
+      N1Loader::Preloader.new(objects).preload(:data)
+
+      expect do
+        objects.each do |object|
+          expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+        end
+      end.to change(klass, :count).from(0).to(1)
+
+      expect do
+        objects.each do |object|
+          expect(object.data("something2", "anything2")).to eq([object, "something2", "anything2"])
+        end
+      end.to change(klass, :count).from(1).to(2)
+    end
+
+    it "supports reloading" do
+      object = klass.new
+
+      expect do
+        expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+      end.to change(klass, :count).from(0).to(1)
+
+      expect do
+        expect(object.data("something", "anything", reload: true)).to eq([object, "something", "anything"])
+      end.to change(klass, :count).from(1).to(2)
+
+      expect do
+        expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+      end.not_to change(klass, :count)
     end
   end
 
