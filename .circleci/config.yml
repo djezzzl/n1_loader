@@ -40,6 +40,9 @@ jobs:
       - attach_workspace:
           at: ~/n1_loader
       - run:
+          name: Print env
+          command: echo $ACTIVERECORD_GEMFILE
+      - run:
           name: Use << parameters.activerecord-gemfile >> as the Gemfile
           command: bundle config --global gemfile << parameters.activerecord-gemfile >>
       - run:
