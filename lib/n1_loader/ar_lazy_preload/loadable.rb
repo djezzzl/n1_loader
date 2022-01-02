@@ -8,7 +8,6 @@ module N1Loader
           name, loader_name, loader_variable_name = super
 
           define_method(loader_name) do
-            raise '1' # TODO: remove
             loader = instance_variable_get(loader_variable_name)
 
             return loader if loader
