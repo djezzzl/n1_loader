@@ -48,7 +48,7 @@ jobs:
           command: |
             bundle exec rspec --profile 10 \
                               --format RspecJunitFormatter \
-                              --out test_results/core-rspec.xml \
+                              --out test_results/core.xml \
                               --format progress \
                               spec/n1_loader_spec.rb
       - run:
@@ -56,7 +56,7 @@ jobs:
           command: |
             bundle exec rspec --profile 10 \
                               --format RspecJunitFormatter \
-                              --out test_results/activerecord-integration-rspec.xml \
+                              --out test_results/activerecord-integration.xml \
                               --format progress \
                               spec/n1_loader_spec.rb \
                               spec/activerecord_spec.rb
@@ -65,7 +65,7 @@ jobs:
           command: |
             bundle exec rspec --profile 10 \
                               --format RspecJunitFormatter \
-                              --out test_results/activerecord-integration-rspec.xml \
+                              --out test_results/ar-lazy-preload-integration.xml \
                               --format progress \
                               spec/n1_loader_spec.rb \
                               spec/activerecord_spec.rb \
