@@ -25,7 +25,7 @@ RSpec.describe N1Loader do
         end
       end
 
-      n1_load :data do
+      n1_load :inline do
         def perform(elements)
           elements.first.class.perform!
 
@@ -33,9 +33,9 @@ RSpec.describe N1Loader do
         end
       end
 
-      n1_load :something, custom_loader
+      n1_load :custom, custom_loader
 
-      n1_load :anything do
+      n1_load :single_optimized do
         def single(element)
           [element]
         end
@@ -44,229 +44,197 @@ RSpec.describe N1Loader do
           raise "unknown"
         end
       end
-    end
-  end
 
-  context "when fulfill was not used" do
-    it "throws an error" do
-      elements = [1, 2]
-
-      loader = Class.new(N1Loader::Loader) do
+      n1_load :missing_fulfill do
         def perform(elements)
           elements.group_by(&:itself)
         end
       end
 
-      expect do
-        loader.new(elements).for(elements.first)
-      end.to raise_error(N1Loader::NotFilled,
-                         "Nothing was preloaded, perhaps you forgot to use fulfill method")
+      n1_load :with_arguments do
+        def perform(elements, something, anything)
+          elements.first.class.perform!
+
+          elements.each do |element|
+            fulfill(element, [element, something, anything])
+          end
+        end
+      end
+
+      n1_load :with_custom_arguments_key do
+        def perform(elements, something, anything)
+          elements.first.class.perform!
+          
+          elements.each do |element|
+            fulfill(element, [element, something, anything])
+          end
+        end
+
+        def self.arguments_key(something, anything)
+          something + anything
+        end
+      end
+    end
+  end
+
+  let(:object) { klass.new }
+  let(:objects) { [klass.new, klass.new] }
+
+  context "when fulfill was not used" do
+    it "throws error" do
+      expect { object.missing_fulfill }
+        .to raise_error(N1Loader::NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method")
     end
   end
 
   describe "arguments support" do
-    let(:klass) do
-      Class.new do
-        include N1Loader::Loadable
-
-        class << self
-          def perform!
-            @count = count + 1
-          end
-
-          def count
-            @count || 0
-          end
-        end
-
-        n1_load :data do
-          def perform(elements, something, anything)
-            elements.first.class.perform!
-
-            elements.each do |element|
-              fulfill(element, [element, something, anything])
-            end
-          end
-        end
-
-        n1_load :custom_key do
-          def self.arguments_key(*_args)
-            raise "Custom key was provided"
-          end
-        end
-      end
-    end
-
     it "has to receive all arguments" do
-      object = klass.new
+      expect { object.with_arguments }.to raise_error(ArgumentError)
+      expect { object.with_arguments("something") }.to raise_error(ArgumentError)
+      expect { object.with_arguments("something", anything: "anything") }.to raise_error(ArgumentError)
 
-      expect { object.data }.to raise_error(ArgumentError)
-      expect { object.data("something") }.to raise_error(ArgumentError)
-      expect { object.data("something", anything: "anything") }.to raise_error(ArgumentError)
-
-      expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+      expect(object.with_arguments("something", "anything")).to eq([object, "something", "anything"])
     end
 
     it "can have custom arguments key" do
-      expect { klass.new.custom_key }.to raise_error(StandardError, "Custom key was provided")
+      # The following two has the same result for custom key, so we only do one perform
+      expect { object.with_custom_arguments_key(1, 2) }.to change(klass, :count).by(1)
+      expect { object.with_custom_arguments_key(2, 1) }.not_to change(klass, :count)
+
+      expect { object.with_custom_arguments_key(2, 3) }.to change(klass, :count).by(1)
     end
 
-    it "works with single" do
-      object = klass.new
-
-      expect do
-        expect(object.data("something", "anything")).to eq([object, "something", "anything"])
-      end.to change(klass, :count)
-    end
-
-    it "works with multiple" do
-      objects = [klass.new, klass.new]
-      N1Loader::Preloader.new(objects).preload(:data)
+    it "works with preloading" do
+      N1Loader::Preloader.new(objects).preload(:with_arguments)
 
       expect do
         objects.each do |object|
-          expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+          expect(object.with_arguments("something", "anything")).to eq([object, "something", "anything"])
         end
-      end.to change(klass, :count).from(0).to(1)
+      end.to change(klass, :count).by(1)
     end
 
-    it "performs based on arguments" do
-      objects = [klass.new, klass.new]
-      N1Loader::Preloader.new(objects).preload(:data)
+    it "caches based on arguments" do
+      N1Loader::Preloader.new(objects).preload(:with_arguments)
 
       expect do
-        objects.each do |object|
-          expect(object.data("something", "anything")).to eq([object, "something", "anything"])
-        end
-      end.to change(klass, :count).from(0).to(1)
+        objects.each { |object| object.with_arguments('something', 'anything') }
+      end.to change(klass, :count).by(1)
 
       expect do
-        objects.each do |object|
-          expect(object.data("something2", "anything2")).to eq([object, "something2", "anything2"])
-        end
-      end.to change(klass, :count).from(1).to(2)
+        objects.each { |object| object.with_arguments('something2', 'anything') }
+      end.to change(klass, :count).by(1)
+
+      expect do
+        objects.each { |object| object.with_arguments('something', 'anything2') }
+      end.to change(klass, :count).by(1)
+
+      expect do
+        objects.each { |object| object.with_arguments('something', 'anything') }
+      end.not_to change(klass, :count)
     end
 
     it "supports reloading" do
-      object = klass.new
+      expect do
+        object.with_arguments("something", "anything")
+      end.to change(klass, :count).by(1)
 
       expect do
-        expect(object.data("something", "anything")).to eq([object, "something", "anything"])
-      end.to change(klass, :count).from(0).to(1)
+        object.with_arguments("something", "anything", reload: true)
+      end.to change(klass, :count).by(1)
 
       expect do
-        expect(object.data("something", "anything", reload: true)).to eq([object, "something", "anything"])
-      end.to change(klass, :count).from(1).to(2)
-
-      expect do
-        expect(object.data("something", "anything")).to eq([object, "something", "anything"])
+        object.with_arguments("something", "anything")
       end.not_to change(klass, :count)
     end
   end
 
   describe "optimization for single object" do
     it "uses optimization" do
-      element = klass.new
-      expect(element.anything).to eq([element])
+      expect(object.single_optimized).to eq([object])
 
-      elements = [klass.new, klass.new]
-      N1Loader::Preloader.new(elements).preload(:anything)
-
-      expect { elements.map(&:anything) }.to raise_error(StandardError, "unknown")
+      N1Loader::Preloader.new(objects).preload(:single_optimized)
+      expect { objects.map(&:single_optimized) }.to raise_error(StandardError, "unknown")
     end
   end
 
   describe "isolated loaders" do
     it "does not need injection" do
-      elements = [1, 2]
+      instance = loader.new(objects)
 
-      instance = loader.new(elements)
-
-      elements.each do |element|
-        expect(instance.for(element)).to eq([element])
+      objects.each do |object|
+        expect(instance.for(object)).to eq([object])
       end
     end
 
     it "checks that element was provided" do
-      elements = [1, 2]
+      instance = loader.new(objects)
 
-      instance = loader.new(elements)
-
-      elements.each do |element|
-        expect(instance.for(element)).to eq([element])
+      objects.each do |object|
+        expect(instance.for(object)).to eq([object])
       end
-      expect { instance.for(3) }.to raise_error(N1Loader::NotLoaded, "The data was not preloaded for the given element")
+      expect { instance.for(object) }.to raise_error(N1Loader::NotLoaded, "The data was not preloaded for the given element")
     end
   end
 
   describe "reloading" do
     context "with preloading" do
-      let(:objects) { [klass.new, klass.new] }
-
       it "reloads cached data" do
-        N1Loader::Preloader.new(objects).preload(:data)
+        N1Loader::Preloader.new(objects).preload(:inline)
 
-        expect { objects.map(&:data) }.to change(klass, :count).from(0).to(1)
+        expect { objects.map(&:inline) }.to change(klass, :count).by(1)
 
-        N1Loader::Preloader.new(objects).preload(:data)
-        expect { objects.map(&:data) }.to change(klass, :count).from(1).to(2)
-        expect { objects.map(&:data) }.not_to change(klass, :count)
+        N1Loader::Preloader.new(objects).preload(:inline)
+        expect { objects.map(&:inline) }.to change(klass, :count).by(1)
+        expect { objects.map(&:inline) }.not_to change(klass, :count)
       end
     end
 
     context "without preloading" do
-      let(:object) { klass.new }
-
       it "reloads cached data" do
-        expect { object.data }.to change(klass, :count).from(0).to(1)
-        expect { object.data(reload: true) }.to change(klass, :count).from(1).to(2)
-        expect { object.data(reload: false) }.not_to change(klass, :count)
-        expect { object.data }.not_to change(klass, :count)
+        expect { object.inline }.to change(klass, :count).by(1)
+        expect { object.inline(reload: true) }.to change(klass, :count).by(1)
+        expect { object.inline(reload: false) }.not_to change(klass, :count)
+        expect { object.inline }.not_to change(klass, :count)
       end
     end
   end
 
   context "with custom loader" do
-    let(:object) { klass.new }
-
     it "works" do
-      expect(object.something).to eq([object])
+      expect(object.custom).to eq([object])
     end
   end
 
   context "without preloading" do
-    let(:object) { klass.new }
-
     it "returns right data" do
-      expect(object.data).to eq([object])
+      expect(object.inline).to eq([object])
     end
 
     it "caches data" do
-      expect { object.data }.to change(klass, :count).from(0).to(1)
-      expect { object.data }.not_to change(klass, :count)
+      expect { object.inline }.to change(klass, :count).by(1)
+      expect { object.inline }.not_to change(klass, :count)
     end
   end
 
   context "with preloading" do
-    let(:objects) { [klass.new, klass.new] }
-
     it "returns right data" do
-      N1Loader::Preloader.new(objects).preload(:data)
+      N1Loader::Preloader.new(objects).preload(:inline)
 
-      expect(objects.first.data).to eq([objects.first])
-      expect(objects.last.data).to eq([objects.last])
+      expect(objects.first.inline).to eq([objects.first])
+      expect(objects.last.inline).to eq([objects.last])
     end
 
     it "lazy loads data" do
-      expect { N1Loader::Preloader.new(objects).preload(:data) }.not_to change(klass, :count)
-      expect { objects.map(&:data) }.to change(klass, :count).from(0).to(1)
+      expect { N1Loader::Preloader.new(objects).preload(:inline) }.not_to change(klass, :count)
+      expect { objects.map(&:inline) }.to change(klass, :count).by(1)
     end
 
     it "uses preloaded data" do
-      N1Loader::Preloader.new(objects).preload(:data)
+      N1Loader::Preloader.new(objects).preload(:inline)
 
-      expect { objects.map(&:data) }.to change(klass, :count).from(0).to(1)
-      expect { objects.map(&:data) }.not_to change(klass, :count)
+      expect { objects.map(&:inline) }.to change(klass, :count).by(1)
+      expect { objects.map(&:inline) }.not_to change(klass, :count)
     end
   end
 end
