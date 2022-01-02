@@ -11,8 +11,8 @@ executors:
     docker:
       - image: circleci/ruby:<< parameters.tag >>
     environment:
-      - BUNDLE_JOBS: 4
-      - BUNDLE_RETRY: 3
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
     working_directory: ~/n1_loader
 
 jobs:
@@ -33,18 +33,13 @@ jobs:
         type: string
     environment:
       ACTIVERECORD_GEMFILE: << parameters.activerecord-gemfile >>
+      AR_LAZY_PRELOAD_GEMFILE: << parameters.ar_lazy_preload-gemfile >>
     executor:
       name: ruby
       tag: << parameters.ruby-version >>
     steps:
       - attach_workspace:
           at: ~/n1_loader
-      - run:
-          name: Print env
-          command: echo $ACTIVERECORD_GEMFILE
-      - run:
-          name: Use << parameters.activerecord-gemfile >> as the Gemfile
-          command: bundle config --global gemfile << parameters.activerecord-gemfile >>
       - run:
           name: Install the gems specified by the Gemfile
           command: bundle install
@@ -91,16 +86,21 @@ workflows:
                 "latest"
               ]
               activerecord-gemfile: [
-                "activerecord-gemfiles/ar_5_latest.gemfile",
-                "activerecord-gemfiles/ar_6_latest.gemfile"
+                "ar_5_latest",
+                "ar_6_latest"
+              ],
+              ar_lazy_preload-gemfile: [
+                "ar_lazy_preload_0.6.1",
+                "ar_lazy_preload_1.0.0",
+                "ar_lazy_preload_master",
               ]
             exclude:
               - ruby-version: "3.0"
-                activerecord-gemfile: "activerecord-gemfiles/ar_5_latest.gemfile"
+                activerecord-gemfile: "ar_5_latest"
               - ruby-version: "latest"
-                activerecord-gemfile: "activerecord-gemfiles/ar_5_latest.gemfile"
+                activerecord-gemfile: "ar_5_latest"
 
-          name: << matrix.activerecord-gemfile >>-build-ruby-<< matrix.ruby-version >>
+          name: ruby-<< matrix.ruby-version >>-<< matrix.activerecord-gemfile >>-<< matrix.ar_lazy_preload-gemfile >>
       - rubocop:
           requires:
             - checkout
