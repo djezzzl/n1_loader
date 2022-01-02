@@ -31,6 +31,8 @@ jobs:
         type: string
       activerecord-gemfile:
         type: string
+      ar_lazy_preload-gemfile:
+        type: string
     environment:
       ACTIVERECORD_GEMFILE: << parameters.activerecord-gemfile >>
       AR_LAZY_PRELOAD_GEMFILE: << parameters.ar_lazy_preload-gemfile >>
