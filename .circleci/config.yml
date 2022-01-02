@@ -97,7 +97,7 @@ workflows:
               - ruby-version: "latest"
                 activerecord-gemfile: "activerecord-gemfiles/ar_5_latest.gemfile"
 
-          name: << matrix.gemfile >>-build-ruby-<< matrix.ruby-version >>
+          name: << matrix.activerecord-gemfile >>-build-ruby-<< matrix.ruby-version >>
       - rubocop:
           requires:
             - checkout
