@@ -103,8 +103,10 @@ workflows:
                 ar_lazy_preload-gemfile: "ar_lazy_preload_master"
               - ruby-version: "3.0"
                 activerecord-gemfile: "ar_5_latest"
+                ar_lazy_preload-gemfile: *
               - ruby-version: "latest"
                 activerecord-gemfile: "ar_5_latest"
+                ar_lazy_preload-gemfile: *
 
           name: ruby-<< matrix.ruby-version >>-<< matrix.activerecord-gemfile >>-<< matrix.ar_lazy_preload-gemfile >>
       - rubocop:
