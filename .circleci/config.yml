@@ -29,8 +29,10 @@ jobs:
     parameters:
       ruby-version:
         type: string
-      gemfile:
+      activerecord-gemfile:
         type: string
+    environment:
+      ACTIVERECORD_GEMFILE: << parameters.activerecord-gemfile >>
     executor:
       name: ruby
       tag: << parameters.ruby-version >>
@@ -38,8 +40,8 @@ jobs:
       - attach_workspace:
           at: ~/n1_loader
       - run:
-          name: Use << parameters.gemfile >> as the Gemfile
-          command: bundle config --global gemfile << parameters.gemfile >>
+          name: Use << parameters.activerecord-gemfile >> as the Gemfile
+          command: bundle config --global gemfile << parameters.activerecord-gemfile >>
       - run:
           name: Install the gems specified by the Gemfile
           command: bundle install
@@ -85,15 +87,15 @@ workflows:
                 "3.0",
                 "latest"
               ]
-              gemfile: [
-                "gemfiles/ar_5_latest.gemfile",
-                "gemfiles/ar_6_latest.gemfile"
+              activerecord-gemfile: [
+                "activerecord-gemfiles/ar_5_latest.gemfile",
+                "activerecord-gemfiles/ar_6_latest.gemfile"
               ]
             exclude:
               - ruby-version: "3.0"
-                gemfile: "gemfiles/ar_5_latest.gemfile"
+                activerecord-gemfile: "activerecord-gemfiles/ar_5_latest.gemfile"
               - ruby-version: "latest"
-                gemfile: "gemfiles/ar_5_latest.gemfile"
+                activerecord-gemfile: "activerecord-gemfiles/ar_5_latest.gemfile"
 
           name: << matrix.gemfile >>-build-ruby-<< matrix.ruby-version >>
       - rubocop:

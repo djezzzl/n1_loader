@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gem "ar_lazy_preload", git: "https://github.com/DmitryTsepelev/ar_lazy_preload", branch: "master"
+
+gemspec path: "../"
