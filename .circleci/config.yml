@@ -11,8 +11,8 @@ executors:
     docker:
       - image: circleci/ruby:<< parameters.tag >>
     environment:
-      - BUNDLE_JOBS: 4
-      - BUNDLE_RETRY: 3
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
     working_directory: ~/n1_loader
 
 jobs:
@@ -29,8 +29,13 @@ jobs:
     parameters:
       ruby-version:
         type: string
-      gemfile:
+      activerecord-gemfile:
         type: string
+      ar_lazy_preload-gemfile:
+        type: string
+    environment:
+      ACTIVERECORD_GEMFILE: << parameters.activerecord-gemfile >>
+      AR_LAZY_PRELOAD_GEMFILE: << parameters.ar_lazy_preload-gemfile >>
     executor:
       name: ruby
       tag: << parameters.ruby-version >>
@@ -38,19 +43,35 @@ jobs:
       - attach_workspace:
           at: ~/n1_loader
       - run:
-          name: Use << parameters.gemfile >> as the Gemfile
-          command: bundle config --global gemfile << parameters.gemfile >>
-      - run:
           name: Install the gems specified by the Gemfile
           command: bundle install
       - run:
-          name: Run RSpec
+          name: Run Core RSpec
           command: |
             bundle exec rspec --profile 10 \
                               --format RspecJunitFormatter \
-                              --out test_results/rspec.xml \
+                              --out test_results/core.xml \
                               --format progress \
-                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+                              spec/n1_loader_spec.rb
+      - run:
+          name: Run ActiveRecord integration RSpec
+          command: |
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out test_results/activerecord-integration.xml \
+                              --format progress \
+                              spec/n1_loader_spec.rb \
+                              spec/activerecord_spec.rb
+      - run:
+          name: Run ActiveRecord integration RSpec
+          command: |
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out test_results/ar-lazy-preload-integration.xml \
+                              --format progress \
+                              spec/n1_loader_spec.rb \
+                              spec/activerecord_spec.rb \
+                              spec/ar_lazy_preload_spec.rb
       - store_test_results:
           path: test_results
 
@@ -80,22 +101,36 @@ workflows:
             parameters:
               ruby-version: [
                 "2.5",
-                "2.6",
                 "2.7",
-                "3.0",
                 "latest"
               ]
-              gemfile: [
-                "gemfiles/ar_5_latest.gemfile",
-                "gemfiles/ar_6_latest.gemfile"
+              activerecord-gemfile: [
+                "ar_5_latest",
+                "ar_6_latest"
+              ]
+              ar_lazy_preload-gemfile: [
+                "ar_lazy_preload_0.6.1",
+                "ar_lazy_preload_master"
               ]
             exclude:
-              - ruby-version: "3.0"
-                gemfile: "gemfiles/ar_5_latest.gemfile"
-              - ruby-version: "latest"
-                gemfile: "gemfiles/ar_5_latest.gemfile"
+              # Ruby 2.5 and AR Lazy Preload 1+
+              - ruby-version: "2.5"
+                activerecord-gemfile: "ar_5_latest"
+                ar_lazy_preload-gemfile: "ar_lazy_preload_master"
 
-          name: << matrix.gemfile >>-build-ruby-<< matrix.ruby-version >>
+              - ruby-version: "2.5"
+                activerecord-gemfile: "ar_6_latest"
+                ar_lazy_preload-gemfile: "ar_lazy_preload_master"
+
+              # AR 5 and ruby 3+
+              - ruby-version: "latest"
+                activerecord-gemfile: "ar_5_latest"
+                ar_lazy_preload-gemfile: "ar_lazy_preload_0.6.1"
+              - ruby-version: "latest"
+                activerecord-gemfile: "ar_5_latest"
+                ar_lazy_preload-gemfile: "ar_lazy_preload_master"
+
+          name: ruby-<< matrix.ruby-version >>-<< matrix.activerecord-gemfile >>-<< matrix.ar_lazy_preload-gemfile >>
       - rubocop:
           requires:
             - checkout

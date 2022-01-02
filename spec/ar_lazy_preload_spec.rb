@@ -1,28 +1,26 @@
 # frozen_string_literal: true
 
-require "rails"
-
-return if ActiveRecord::VERSION::MAJOR >= 7
-
-require_relative "../lib/n1_loader/ar_lazy_preload"
-
-ActiveSupport.on_load(:active_record) do
-  ActiveRecord::Base.include(ArLazyPreload::Base)
-
-  ActiveRecord::Relation.prepend(ArLazyPreload::Relation)
-  ActiveRecord::AssociationRelation.prepend(ArLazyPreload::AssociationRelation)
-  ActiveRecord::Relation::Merger.prepend(ArLazyPreload::Merger)
-
-  [
-    ActiveRecord::Associations::CollectionAssociation,
-    ActiveRecord::Associations::Association
-  ].each { |klass| klass.prepend(ArLazyPreload::Association) }
-
-  ActiveRecord::Associations::CollectionAssociation.prepend(ArLazyPreload::CollectionAssociation)
-  ActiveRecord::Associations::CollectionProxy.prepend(ArLazyPreload::CollectionProxy)
-end
-
 RSpec.describe "N1Loader AR Lazy Preload integration" do
+  require "rails"
+
+  require_relative "../lib/n1_loader/ar_lazy_preload"
+
+  ActiveSupport.on_load(:active_record) do
+    ActiveRecord::Base.include(ArLazyPreload::Base)
+
+    ActiveRecord::Relation.prepend(ArLazyPreload::Relation)
+    ActiveRecord::AssociationRelation.prepend(ArLazyPreload::AssociationRelation)
+    ActiveRecord::Relation::Merger.prepend(ArLazyPreload::Merger)
+
+    [
+      ActiveRecord::Associations::CollectionAssociation,
+      ActiveRecord::Associations::Association
+    ].each { |klass| klass.prepend(ArLazyPreload::Association) }
+
+    ActiveRecord::Associations::CollectionAssociation.prepend(ArLazyPreload::CollectionAssociation)
+    ActiveRecord::Associations::CollectionProxy.prepend(ArLazyPreload::CollectionProxy)
+  end
+
   before do
     ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
     ActiveRecord::Base.connection.tables.each do |table|

@@ -1,0 +1,3 @@
+# frozen_string_literal: true
+
+gem "ar_lazy_preload", "= 1.0.0"

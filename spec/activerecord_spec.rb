@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-require "active_record"
-
-return if ActiveRecord::VERSION::MAJOR >= 7
-
-require_relative "../lib/n1_loader/active_record"
-
 RSpec.describe "N1Loader ActiveRecord integration" do
+  require "active_record"
+
+  require_relative "../lib/n1_loader/active_record"
+
   before do
     ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
     ActiveRecord::Base.connection.tables.each do |table|
