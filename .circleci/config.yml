@@ -88,11 +88,11 @@ workflows:
               activerecord-gemfile: [
                 "ar_5_latest",
                 "ar_6_latest"
-              ],
+              ]
               ar_lazy_preload-gemfile: [
                 "ar_lazy_preload_0.6.1",
                 "ar_lazy_preload_1.0.0",
-                "ar_lazy_preload_master",
+                "ar_lazy_preload_master"
               ]
             exclude:
               - ruby-version: "3.0"
