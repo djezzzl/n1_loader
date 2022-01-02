@@ -44,13 +44,32 @@ jobs:
           name: Install the gems specified by the Gemfile
           command: bundle install
       - run:
-          name: Run RSpec
+          name: Run Core RSpec
           command: |
             bundle exec rspec --profile 10 \
                               --format RspecJunitFormatter \
-                              --out test_results/rspec.xml \
+                              --out test_results/core-rspec.xml \
                               --format progress \
-                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+                              spec/n1_loader_spec.rb
+      - run:
+          name: Run ActiveRecord integration RSpec
+          command: |
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out test_results/activerecord-integration-rspec.xml \
+                              --format progress \
+                              spec/n1_loader_spec.rb \
+                              spec/activerecord_spec.rb
+      - run:
+          name: Run ActiveRecord integration RSpec
+          command: |
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out test_results/activerecord-integration-rspec.xml \
+                              --format progress \
+                              spec/n1_loader_spec.rb \
+                              spec/activerecord_spec.rb \
+                              spec/ar_lazy_preload_spec.rb
       - store_test_results:
           path: test_results
 
