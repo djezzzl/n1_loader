@@ -39,7 +39,7 @@ gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
 
 ## Usage
 
-**Supported Ruby version:** 2.5, 2.6, 2.7, 3.0, and latest.
+**Supported Ruby version:** 2.5, 2.6, 2.7, 3.0, and latest. (_could be more_)
 
 ```ruby
 class Example
@@ -188,7 +188,7 @@ objects.map(&:something) # perform will be used once without N+1
 
 ### [ActiveRecord][5]
 
-**Supported versions**: 5, 6. 
+**Supported versions**: 5, 6. (_could be more_)
 
 _Note_: Please open an issue if you interested in support of version 7 or other.
 
@@ -219,6 +219,8 @@ users.map(&:orders_count)
 ```
 
 ### [ArLazyPreload][6]
+
+**Supported versions**: 0.6, 1.0, and master. (_could be more_)
 
 ```ruby
 class User < ActiveRecord::Base
