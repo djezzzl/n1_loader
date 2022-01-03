@@ -12,9 +12,7 @@ module N1Loader
 
         def preloaders_for_one(association, records, scope)
           grouped_records(association, records).flat_map do |reflection, klasses|
-            if reflection.is_a?(N1LoaderReflection)
-              next N1Loader::Preloader.new(records).preload(reflection.key).map(&:with)
-            end
+            next N1Loader::Preloader.new(records).preload(reflection.key) if reflection.is_a?(N1LoaderReflection)
 
             klasses.map do |rhs_klass, rs|
               loader = preloader_for(reflection, rs).new(rhs_klass, rs, reflection, scope)
