@@ -64,7 +64,7 @@ RSpec.describe N1Loader do
       n1_load :with_custom_arguments_key do
         def perform(elements, something, anything)
           elements.first.class.perform!
-          
+
           elements.each do |element|
             fulfill(element, [element, something, anything])
           end
@@ -118,19 +118,19 @@ RSpec.describe N1Loader do
       N1Loader::Preloader.new(objects).preload(:with_arguments)
 
       expect do
-        objects.each { |object| object.with_arguments('something', 'anything') }
+        objects.each { |object| object.with_arguments("something", "anything") }
       end.to change(klass, :count).by(1)
 
       expect do
-        objects.each { |object| object.with_arguments('something2', 'anything') }
+        objects.each { |object| object.with_arguments("something2", "anything") }
       end.to change(klass, :count).by(1)
 
       expect do
-        objects.each { |object| object.with_arguments('something', 'anything2') }
+        objects.each { |object| object.with_arguments("something", "anything2") }
       end.to change(klass, :count).by(1)
 
       expect do
-        objects.each { |object| object.with_arguments('something', 'anything') }
+        objects.each { |object| object.with_arguments("something", "anything") }
       end.not_to change(klass, :count)
     end
 
@@ -173,7 +173,9 @@ RSpec.describe N1Loader do
       objects.each do |object|
         expect(instance.for(object)).to eq([object])
       end
-      expect { instance.for(object) }.to raise_error(N1Loader::NotLoaded, "The data was not preloaded for the given element")
+      expect do
+        instance.for(object)
+      end.to raise_error(N1Loader::NotLoaded, "The data was not preloaded for the given element")
     end
   end
 
