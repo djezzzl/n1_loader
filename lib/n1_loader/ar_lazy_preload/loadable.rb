@@ -15,8 +15,7 @@ module N1Loader
               return instance_variable_get(loader_variable_name)
             end
 
-            instance_variable_set(loader_variable_name,
-                                  N1Loader::LoaderCollection.new(self.class.send(loader_name), [self]))
+            send("#{loader_name}_reload")
           end
         end
       end
