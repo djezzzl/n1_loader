@@ -7,8 +7,10 @@ module N1Loader
   #     include N1Loader::Loadable
   #
   #     # with inline loader
-  #     n1_loader :something do |elements|
-  #       elements.each { |element| fulfill(element,, element.calculate_something) }
+  #     n1_loader :something do
+  #       def perform(elements)
+  #         elements.each { |element| fulfill(element,, element.calculate_something) }
+  #       end
   #     end
   #
   #     # with custom loader
@@ -26,8 +28,8 @@ module N1Loader
       send("#{name}_loader")
     end
 
-    def n1_loader_set(name, loader)
-      send("#{name}_loader=", loader)
+    def n1_loader_set(name, loader_collection)
+      send("#{name}_loader=", loader_collection)
     end
 
     def self.included(base)
@@ -45,13 +47,8 @@ module N1Loader
 
       def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         loader ||= Class.new(N1Loader::Loader) do
-          if block && block.arity == 1
-            define_method(:perform, &block)
-          else
-            class_eval(&block)
-          end
+          class_eval(&block)
         end
-
         loader_name = "#{name}_loader"
         loader_variable_name = "@#{loader_name}"
 
@@ -60,21 +57,22 @@ module N1Loader
         end
 
         define_method("#{loader_name}_reload") do
-          instance_variable_set(loader_variable_name, self.class.send(loader_name).new([self]))
+          instance_variable_set(loader_variable_name,
+                                N1Loader::LoaderCollection.new(self.class.send(loader_name), [self]))
         end
 
-        define_method("#{loader_name}=") do |loader_instance|
-          instance_variable_set(loader_variable_name, loader_instance)
+        define_method("#{loader_name}=") do |loader_collection_instance|
+          instance_variable_set(loader_variable_name, loader_collection_instance)
         end
 
         define_method(loader_name) do
           instance_variable_get(loader_variable_name) || send("#{loader_name}_reload")
         end
 
-        define_method(name) do |reload: false|
+        define_method(name) do |*args, reload: false|
           send("#{loader_name}_reload") if reload
 
-          send(loader_name).for(self)
+          send(loader_name).with(*args).for(self)
         end
 
         [name, loader_name, loader_variable_name]

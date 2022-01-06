@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe "N1Loader AR Lazy Preload integration" do
-  require "rails"
-
   require_relative "../lib/n1_loader/ar_lazy_preload"
 
   ActiveSupport.on_load(:active_record) do
@@ -34,9 +32,7 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
         t.belongs_to :entity
       end
     end
-  end
 
-  let!(:entity_class) do
     stub_const("Entity", Class.new(ActiveRecord::Base) do
       include N1Loader::Loadable
 
@@ -58,15 +54,23 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
         end
       end
 
-      n1_load :data do |elements|
-        elements.first.class.perform!
+      n1_load :data do
+        def perform(elements)
+          elements.first.class.perform!
 
-        elements.each { |element| fulfill(element, [element]) }
+          elements.each { |element| fulfill(element, [element]) }
+        end
+      end
+
+      n1_load :with_arguments do
+        def perform(elements, something)
+          Entity.perform!
+
+          elements.each { |element| fulfill(element, [element, something]) }
+        end
       end
     end)
-  end
 
-  let!(:company_class) do
     stub_const("Company", Class.new(ActiveRecord::Base) do
       include N1Loader::Loadable
 
@@ -88,47 +92,97 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
         end
       end
 
-      n1_load :data do |elements|
-        elements.first.class.perform!
+      n1_load :data do
+        def perform(elements)
+          elements.first.class.perform!
 
-        hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
-        elements.each { |element| fulfill(element, hash[element.entity_id]) }
+          hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
+          elements.each { |element| fulfill(element, hash[element.entity_id]) }
+        end
+      end
+
+      n1_load :with_arguments do
+        def perform(elements, something)
+          Company.perform!
+
+          hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
+          elements.each { |element| fulfill(element, [hash[element.entity_id], something]) }
+        end
       end
     end)
   end
 
   before do
-    company_class.create!(entity: entity_class.create!)
-    company_class.create!(entity: entity_class.create!)
+    Company.create!(entity: Entity.create!)
+    Company.create!(entity: Entity.create!)
   end
 
   it "works" do
     expect do
-      company_class.preload_associations_lazily.all.map(&:data)
+      Company.preload_associations_lazily.all.map(&:data)
     end
       .to make_database_queries(matching: /entities/, count: 1)
       .and make_database_queries(matching: /companies/, count: 1)
       .and make_database_queries(count: 2)
+      .and change(Company, :count).by(1)
 
     expect do
-      entity_class.preload_associations_lazily.all.map(&:company).map(&:data)
+      Entity.preload_associations_lazily.all.map(&:company).map(&:data)
     end
       .to make_database_queries(matching: /entities/, count: 2)
       .and make_database_queries(matching: /companies/, count: 1)
       .and make_database_queries(count: 3)
+      .and change(Company, :count).by(1)
 
     expect do
-      company_class.preload_associations_lazily.all.map(&:data).map(&:company)
+      Company.preload_associations_lazily.all.map(&:data).map(&:company)
     end
       .to make_database_queries(matching: /entities/, count: 1)
       .and make_database_queries(matching: /companies/, count: 2)
       .and make_database_queries(count: 3)
+      .and change(Company, :count).by(1)
 
     expect do
-      company_class.lazy_preload(data: :company).map(&:data).map(&:company)
+      Company.lazy_preload(data: :company).map(&:data).map(&:company)
     end
       .to make_database_queries(matching: /entities/, count: 1)
       .and make_database_queries(matching: /companies/, count: 2)
       .and make_database_queries(count: 3)
+      .and change(Company, :count).by(1)
+  end
+
+  context "with arguments" do
+    it "works" do
+      expect do
+        Company.preload_associations_lazily.all.each { |company| company.with_arguments("something") }
+      end
+        .to make_database_queries(matching: /entities/, count: 1)
+        .and make_database_queries(matching: /companies/, count: 1)
+        .and make_database_queries(count: 2)
+        .and change(Company, :count).by(1)
+
+      expect do
+        Entity.preload_associations_lazily.all.each { |entity| entity.company.with_arguments("something") }
+      end
+        .to make_database_queries(matching: /entities/, count: 2)
+        .and make_database_queries(matching: /companies/, count: 1)
+        .and make_database_queries(count: 3)
+
+      expect do
+        Company.preload_associations_lazily.each { |company| company.with_arguments("something").first.company }
+      end
+        .to make_database_queries(matching: /entities/, count: 1)
+        .and make_database_queries(matching: /companies/, count: 2)
+        .and make_database_queries(count: 3)
+
+      expect do
+        Company.lazy_preload(with_arguments: :company).each do |company|
+          company.with_arguments("something").first.company
+        end
+      end
+        .to make_database_queries(matching: /entities/, count: 1)
+        .and make_database_queries(matching: /companies/, count: 2)
+        .and make_database_queries(count: 3)
+    end
   end
 end
