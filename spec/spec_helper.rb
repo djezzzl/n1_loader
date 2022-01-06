@@ -21,4 +21,8 @@ RSpec.configure do |config|
   def ar_lazy_preload_defined?
     defined?(ArLazyPreload)
   end
+
+  def ar_version_5?
+    ActiveRecord::VERSION::MAJOR == 5
+  end
 end
