@@ -17,4 +17,8 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  def ar_lazy_preload_defined?
+    defined?(ArLazyPreload)
+  end
 end

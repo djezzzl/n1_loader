@@ -19,7 +19,7 @@ module N1Loader
       end
 
       def perform_preloading(association_name)
-        context_setup = -> (records) {
+        context_setup = lambda { |records|
           AssociatedContextBuilder.prepare(
             parent_context: self,
             association_name: association_name,
@@ -27,7 +27,7 @@ module N1Loader
           )
         }
 
-        N1Loader::ArLazyPreload::Preloader.new(records, context_setup).preload(association_name)
+        N1Loader::Preloader.new(records, context_setup).preload(association_name)
       end
     end
   end

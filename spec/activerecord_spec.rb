@@ -141,18 +141,34 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     context "with arguments" do
       let(:objects) { Entity.includes(:with_arguments) }
 
-      it "works" do
-        expect do
-          expect { objects.each { |object| object.with_arguments("something") } }.to change(Entity, :count).by(1)
-          expect { objects.each { |object| object.with_arguments("something") } }.not_to change(Entity, :count)
-          expect { objects.each { |object| object.with_arguments("anything") } }.to change(Entity, :count).by(1)
+      context "without ArLazyPreload" do
+        before { skip if ar_lazy_preload_defined? }
 
-          objects.each do |object|
-            expect(object.with_arguments("something")).to eq([object, "something"])
+        it "works" do
+          expect do
+            expect { objects.each { |object| object.with_arguments("something") } }.to change(Entity, :count).by(1)
+            expect { objects.each { |object| object.with_arguments("something") } }.not_to change(Entity, :count)
+            expect { objects.each { |object| object.with_arguments("anything") } }.to change(Entity, :count).by(1)
+
+            objects.each do |object|
+              expect(object.with_arguments("something")).to eq([object, "something"])
+            end
           end
+            .to make_database_queries(matching: /entities/, count: 1)
+            .and make_database_queries(count: 1)
         end
-          .to make_database_queries(matching: /entities/, count: 1)
-          .and make_database_queries(count: 1)
+      end
+
+      context "with ArLazyPreload" do
+        before { skip unless ar_lazy_preload_defined? }
+
+        it "doesn't work" do
+          expect do
+            objects.each do |object|
+              object.with_arguments("something")
+            end
+          end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
+        end
       end
     end
   end
@@ -180,16 +196,32 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     context "with arguments" do
       let(:objects) { Entity.includes(company: :with_arguments) }
 
-      it "works" do
-        expect do
-          objects.each do |object|
-            expect(object.company.with_arguments("something")).to eq([object, "something"])
+      context "without ArLazyPreload" do
+        before { skip if ar_lazy_preload_defined? }
+
+        it "works" do
+          expect do
+            objects.each do |object|
+              expect(object.company.with_arguments("something")).to eq([object, "something"])
+            end
           end
+            .to make_database_queries(matching: /entities/, count: 2)
+            .and make_database_queries(matching: /companies/, count: 1)
+            .and make_database_queries(count: 3)
+            .and change(Company, :count).by(1)
         end
-          .to make_database_queries(matching: /entities/, count: 2)
-          .and make_database_queries(matching: /companies/, count: 1)
-          .and make_database_queries(count: 3)
-          .and change(Company, :count).by(1)
+      end
+
+      context "with ArLazyPreload" do
+        before { skip unless ar_lazy_preload_defined? }
+
+        it "doesn't work" do
+          expect do
+            objects.each do |object|
+              object.company.with_arguments("something")
+            end
+          end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
+        end
       end
     end
   end

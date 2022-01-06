@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module N1Loader
   module ArLazyPreload
-    class Preloader < N1Loader::Preloader
-      def initialize(elements, context_setup)
+    # A patch to {N1Loader::Preloader} setup lazy context lazily.
+    module PreloaderPatch
+      def initialize(elements, context_setup = nil)
         super(elements)
         @context_setup = context_setup
       end
