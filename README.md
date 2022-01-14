@@ -14,6 +14,7 @@ It has many benefits:
 - it supports [shareable loaders](#shareable-loaders) between multiple classes
 - it supports [reloading](#reloading)
 - it supports optimized [single object loading](#optimized-single-case)
+- it supports [arguments](#arguments)
 - it has an integration with [ActiveRecord][5] which makes it brilliant ([example](#activerecord))
 - it has an integration with [ArLazyPreload][6] which makes it excellent ([example](#arlazypreload))
 
@@ -39,119 +40,115 @@ gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
 
 ## Usage
 
-**Supported Ruby version:** 2.5, 2.6, 2.7, 3.0, and latest.
-
 ```ruby
-class Example
+class User
   include N1Loader::Loadable
 
   # with inline loader
-  n1_loader :anything do |elements|
-    elements.each { |element| fulfill(element, [element]) }
-  end
-
-  # with custom loader
-  n1_loader :something, MyLoader
-end
-
-# Custom loader that can be shared with many classes
-class MyLoader < N1Loader::Loader
-  def perform(elements)
-    elements.each { |element| fulfill(element, [element]) }
+  n1_loader :orders_count do |users|
+    orders_per_user = Order.where(user: users).group(:user_id).count
+    
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
   end
 end
 
 # For single object
-ex = Example.new
-ex.anything 
+user = User.new
+user.orders_count 
 
 # For multiple objects without N+1
-objects = [Example.new, Example.new]
-N1Loader::Preloader.new(objects).preload(:anything)
-objects.map(&:anything)
+users = [User.new, User.new]
+N1Loader::Preloader.new(users).preload(:orders_count)
+users.map(&:orders_count)
 ```
 
 ### Lazy loading
 
 ```ruby
-class Example
+class User
   include N1Loader::Loadable
-  
-  n1_loader :anything do |elements|
-    elements.each { |element| fulfill(element, [element]) }
+
+  # with inline loader
+  n1_loader :orders_count do |users|
+    orders_per_user = Order.where(user: users).group(:user_id).count
+
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
   end
 end
 
-object = Example.new # => nothing was done for loading
-object.anything # => first time loading
+user = User.new # => nothing was done for loading
+user.orders_count # => first time loading
 
-objects = [Example.new, Example.new] # => nothing was done for loading
-N1Loader::Preloader.new([objects]).preload(:anything) # => we only initial loader but didn't perform it yet
-objects.map(&:anything) # => loading happen for the first time (without N+1)
+users = [User.new, User.new] # => nothing was done for loading
+N1Loader::Preloader.new([users]).preload(:orders_count) # => we only initialized loader but didn't perform it yet
+users.map(&:orders_count) # => loading has happen for the first time (without N+1)
 ```
 
 
 ### Shareable loaders
 
 ```ruby
-class MyLoader < N1Loader::Loader
-  def perform(elements)
-    elements.each { |element| fulfill(element, [element]) }
+class OrdersCountLoader < N1Loader::Loader
+  def perform(users)
+    orders_per_user = Order.where(user: users).group(:user_id).count
+
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
   end
 end
 
-class A
+class User
   include N1Loader::Loadable
   
-  n1_loader :anything, MyLoader
+  n1_loader :orders_count, OrdersCountLoader
 end
 
-class B
+class Customer
   include N1Loader::Loadable
   
-  n1_loader :something, MyLoader
+  n1_loader :orders_count, OrdersCountLoader
 end
 
-A.new.anything # => works
-B.new.something  # => works
+User.new.orders_count # => works
+Customer.new.orders_count  # => works
 ```
 
 ### Reloading
 
 ```ruby
-class Example
+class User
   include N1Loader::Loadable
 
   # with inline loader
-  n1_loader :anything do |elements|
-    elements.each { |element| fulfill(element, [element]) }
+  n1_loader :orders_count do |users|
+    orders_per_user = Order.where(user: users).group(:user_id).count
+
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
   end
 end
 
-object = Example.new
-object.anything # => loader is executed first time and value was cached
-object.anything(reload: true) # => loader is executed again and a new value was cached
+user = User.new
+user.orders_count # => loader is executed first time and value was cached
+user.orders_count(reload: true) # => loader is executed again and a new value was cached
 
-objects = [Example.new, Example.new]
+users = [User.new, User.new]
+N1Loader::Preloader.new(users).preload(:orders_count) # => loader was initialized but not yet executed
+users.map(&:orders_count) # => loader was executed first time without N+1 issue and values were cached
 
-N1Loader::Preloader.new(objects).preload(:anything) # => loader was initialized but not yet executed
-objects.map(&:anything) # => loader was executed first time without N+1 issue and values were cached
-
-N1Loader::Preloader.new(objects).preload(:anything) # => loader was initialized again but not yet executed
-objects.map(&:anything) # => new loader was executed first time without N+1 issue and new values were cached
+N1Loader::Preloader.new(users).preload(:orders_count) # => loader was initialized again but not yet executed
+users.map(&:orders_count) # => new loader was executed first time without N+1 issue and new values were cached
 ```
 
 ### Isolated loaders
 
 ```ruby
-class MyLoader < N1Loader::Loader
+class IsolatedLoader < N1Loader::Loader
   def perform(elements)
     elements.each { |element| fulfill(element, [element]) }
   end
 end
 
 objects = [1, 2, 3, 4]
-loader = MyLoader.new(objects)
+loader = IsolatedLoader.new(objects)
 objects.each do |object|
   loader.for(object) # => it has no N+1 and it doesn't require to be injected in the class
 end
@@ -160,46 +157,92 @@ end
 ### Optimized single case
 
 ```ruby
-class Example
+class User
   include N1Loader::Loadable
   
-  n1_loader :something do # no arguments passed to the block, so we can override both perform and single.
-    def perform(elements)
-      elements.each { |element| fulfill(element, [element]) }
+  n1_loader :orders_count do # no arguments passed to the block, so we can override both perform and single.
+    def perform(users)
+      orders_per_user = Order.where(user: users).group(:user_id).count
+
+      users.each { |user| fulfill(user, orders_per_user[user.id]) }
     end
     
     # Optimized for single object loading
-    def single(element)
-      # Just return a value you want to have for this element
-      [element]
+    def single(user)
+      user.orders.count
     end
   end
 end
 
-object = Example.new
-object.something # single will be used here
+user = User.new
+user.orders_count # single will be used here
 
-objects = [Example.new, Example.new]
-N1Loader::Preloader.new(objects).preload(:something)
-objects.map(&:something) # perform will be used once without N+1
+users = [User.new, User.new]
+N1Loader::Preloader.new(users).preload(:orders_count)
+users.map(&:orders_count) # perform will be used once without N+1
 ```
+
+### Arguments
+
+```ruby
+class User
+  include N1Loader::Loadable
+
+  n1_loader :orders_count do |users, type|
+    orders_per_user = Order.where(type: type, user: users).group(:user_id).count
+
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
+  end
+end
+
+user = User.new
+user.orders_count(:gifts) # The loader will be performed first time for this argument
+user.orders_count(:sales) # The loader will be performed first time for this argument
+user.orders_count(:gifts) # The cached value will be used
+
+users = [User.new, User.new]
+N1Loader::Preloader.new(users).preload(:orders_count)
+users.map { |user| user.orders_count(:gifts) } # No N+1 here
+```
+
+_Note_: By default, we use `arguments.map(&:object_id)` to identify arguments but in some cases, 
+you may want to override it, for example:
+
+```ruby
+class User
+  include N1Loader::Loadable
+
+  n1_loader :orders_count do
+    def perform(users, sale)
+      orders_per_user = Order.where(sale: sale, user: users).group(:user_id).count
+      
+      users.each { |user| fulfill(user, orders_per_user[user.id]) }
+    end
+
+    def self.arguments_key(sale)
+      sale.id
+    end
+  end
+end
+
+user = User.new
+user.orders_count(Sale.first) # perform will be executed and value will be cached
+user.orders_count(Sale.first) # the cached value will be returned
+```
+
 
 ## Integrations
 
 ### [ActiveRecord][5]
-
-**Supported versions**: 5, 6. 
-
-_Note_: Please open an issue if you interested in support of version 7 or other.
 
 ```ruby
 class User < ActiveRecord::Base
   include N1Loader::Loadable
   
   n1_loader :orders_count do |users|
-    hash = Order.where(user: users).group(:user_id).count
-    
-    users.each { |user| fulfill(user, hash[user.id]) }
+    orders_per_user = Order.where(user: users).group(:user_id).count
+
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
   end
 end
 
@@ -225,9 +268,9 @@ class User < ActiveRecord::Base
   include N1Loader::Loadable
   
   n1_loader :orders_count do |users|
-    hash = Order.where(user: users).group(:user_id).count
+    orders_per_user = Order.where(user: users).group(:user_id).count
 
-    users.each { |user| fulfill(user, hash[user.id]) }
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
   end
 end
 
@@ -243,12 +286,6 @@ User.preload_associations_lazily.all.map(&:orders_count)
 ArLazyPreload.config.auto_preload = true
 User.all.map(:orders_count)
 ```
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 

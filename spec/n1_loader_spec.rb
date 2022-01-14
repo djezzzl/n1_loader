@@ -25,12 +25,10 @@ RSpec.describe N1Loader do
         end
       end
 
-      n1_load :inline do
-        def perform(elements)
-          elements.first.class.perform!
+      n1_load :inline do |elements|
+        elements.first.class.perform!
 
-          elements.each { |element| fulfill(element, [element]) }
-        end
+        elements.each { |element| fulfill(element, [element]) }
       end
 
       n1_load :custom, custom_loader

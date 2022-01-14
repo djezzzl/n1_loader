@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Evgeniy Demin"]
   spec.email         = ["lawliet.djez@gmail.com"]
 
-  spec.summary       = "N+1 loader to solve the problem for good."
+  spec.summary       = "Loader to solve N+1 issue for good."
   spec.homepage      = "https://github.com/djezzzl/n1_loader"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 2.5.0"
