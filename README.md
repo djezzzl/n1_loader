@@ -14,6 +14,7 @@ It has many benefits:
 - it supports [shareable loaders](#shareable-loaders) between multiple classes
 - it supports [reloading](#reloading)
 - it supports optimized [single object loading](#optimized-single-case)
+- it supports [arguments](#arguments)
 - it has an integration with [ActiveRecord][5] which makes it brilliant ([example](#activerecord))
 - it has an integration with [ArLazyPreload][6] which makes it excellent ([example](#arlazypreload))
 
@@ -180,6 +181,55 @@ users = [User.new, User.new]
 N1Loader::Preloader.new(users).preload(:orders_count)
 users.map(&:orders_count) # perform will be used once without N+1
 ```
+
+### Arguments
+
+```ruby
+class User
+  include N1Loader::Loadable
+
+  n1_loader :orders_count do |users, type|
+    orders_per_user = Order.where(type: type, user: users).group(:user_id).count
+
+    users.each { |user| fulfill(user, orders_per_user[user.id]) }
+  end
+end
+
+user = User.new
+user.orders_count(:gifts) # The loader will be performed first time for this argument
+user.orders_count(:sales) # The loader will be performed first time for this argument
+user.orders_count(:gifts) # The cached value will be used
+
+users = [User.new, User.new]
+N1Loader::Preloader.new(users).preload(:orders_count)
+users.map { |user| user.orders_count(:gifts) } # No N+1 here
+```
+
+_Note_: By default, we use `arguments.map(&:object_id)` to identify arguments but in some cases, 
+you may want to override it, for example:
+
+```ruby
+class User
+  include N1Loader::Loadable
+
+  n1_loader :orders_count do
+    def perform(users, sale)
+      orders_per_user = Order.where(sale: sale, user: users).group(:user_id).count
+      
+      users.each { |user| fulfill(user, orders_per_user[user.id]) }
+    end
+
+    def self.arguments_key(sale)
+      sale.id
+    end
+  end
+end
+
+user = User.new
+user.orders_count(Sale.first) # perform will be executed and value will be cached
+user.orders_count(Sale.first) # the cached value will be returned
+```
+
 
 ## Integrations
 
