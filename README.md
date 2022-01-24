@@ -45,7 +45,7 @@ class User
   include N1Loader::Loadable
 
   # with inline loader
-  n1_loader :orders_count do |users|
+  n1_load :orders_count do |users|
     orders_per_user = Order.where(user: users).group(:user_id).count
     
     users.each { |user| fulfill(user, orders_per_user[user.id]) }
@@ -69,7 +69,7 @@ class User
   include N1Loader::Loadable
 
   # with inline loader
-  n1_loader :orders_count do |users|
+  n1_load :orders_count do |users|
     orders_per_user = Order.where(user: users).group(:user_id).count
 
     users.each { |user| fulfill(user, orders_per_user[user.id]) }
@@ -98,14 +98,14 @@ end
 
 class User
   include N1Loader::Loadable
-  
-  n1_loader :orders_count, OrdersCountLoader
+
+  n1_load :orders_count, OrdersCountLoader
 end
 
 class Customer
   include N1Loader::Loadable
-  
-  n1_loader :orders_count, OrdersCountLoader
+
+  n1_load :orders_count, OrdersCountLoader
 end
 
 User.new.orders_count # => works
@@ -119,7 +119,7 @@ class User
   include N1Loader::Loadable
 
   # with inline loader
-  n1_loader :orders_count do |users|
+  n1_load :orders_count do |users|
     orders_per_user = Order.where(user: users).group(:user_id).count
 
     users.each { |user| fulfill(user, orders_per_user[user.id]) }
@@ -159,8 +159,8 @@ end
 ```ruby
 class User
   include N1Loader::Loadable
-  
-  n1_loader :orders_count do # no arguments passed to the block, so we can override both perform and single.
+
+  n1_load :orders_count do # no arguments passed to the block, so we can override both perform and single.
     def perform(users)
       orders_per_user = Order.where(user: users).group(:user_id).count
 
@@ -188,7 +188,7 @@ users.map(&:orders_count) # perform will be used once without N+1
 class User
   include N1Loader::Loadable
 
-  n1_loader :orders_count do |users, type|
+  n1_load :orders_count do |users, type|
     orders_per_user = Order.where(type: type, user: users).group(:user_id).count
 
     users.each { |user| fulfill(user, orders_per_user[user.id]) }
@@ -212,7 +212,7 @@ you may want to override it, for example:
 class User
   include N1Loader::Loadable
 
-  n1_loader :orders_count do
+  n1_load :orders_count do
     def perform(users, sale)
       orders_per_user = Order.where(sale: sale, user: users).group(:user_id).count
       
@@ -235,11 +235,13 @@ user.orders_count(Sale.first) # the cached value will be returned
 
 ### [ActiveRecord][5]
 
+_Note_: Rails 7 support is coming soon! Stay tuned!
+
 ```ruby
 class User < ActiveRecord::Base
   include N1Loader::Loadable
-  
-  n1_loader :orders_count do |users|
+
+  n1_load :orders_count do |users|
     orders_per_user = Order.where(user: users).group(:user_id).count
 
     users.each { |user| fulfill(user, orders_per_user[user.id]) }
@@ -266,8 +268,8 @@ users.map(&:orders_count)
 ```ruby
 class User < ActiveRecord::Base
   include N1Loader::Loadable
-  
-  n1_loader :orders_count do |users|
+
+  n1_load :orders_count do |users|
     orders_per_user = Order.where(user: users).group(:user_id).count
 
     users.each { |user| fulfill(user, orders_per_user[user.id]) }
