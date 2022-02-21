@@ -25,15 +25,15 @@ RSpec.describe N1Loader do
         end
       end
 
-      n1_load :inline do |elements|
+      n1_optimized :inline do |elements|
         elements.first.class.perform!
 
         elements.each { |element| fulfill(element, [element]) }
       end
 
-      n1_load :custom, custom_loader
+      n1_optimized :custom, custom_loader
 
-      n1_load :single_optimized do
+      n1_optimized :single_optimized do
         def single(element)
           [element]
         end
@@ -43,13 +43,13 @@ RSpec.describe N1Loader do
         end
       end
 
-      n1_load :missing_fulfill do
+      n1_optimized :missing_fulfill do
         def perform(elements)
           elements.group_by(&:itself)
         end
       end
 
-      n1_load :with_arguments do
+      n1_optimized :with_arguments do
         def perform(elements, something, anything)
           elements.first.class.perform!
 
@@ -59,7 +59,7 @@ RSpec.describe N1Loader do
         end
       end
 
-      n1_load :with_custom_arguments_key do
+      n1_optimized :with_custom_arguments_key do
         def perform(elements, something, anything)
           elements.first.class.perform!
 

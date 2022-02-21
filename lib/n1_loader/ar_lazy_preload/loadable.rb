@@ -4,7 +4,7 @@ module N1Loader
   module ArLazyPreload
     module Loadable
       module ClassMethods # :nodoc:
-        def n1_load(name, loader = nil, &block)
+        def n1_optimized(name, loader = nil, &block)
           name, loader_name, loader_variable_name = super
 
           define_method(loader_name) do
