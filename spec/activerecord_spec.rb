@@ -38,7 +38,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         end
       end
 
-      n1_load :data do
+      n1_optimized :data do
         def perform(elements)
           Entity.perform!
 
@@ -46,7 +46,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         end
       end
 
-      n1_load :with_arguments do
+      n1_optimized :with_arguments do
         def perform(elements, something)
           Entity.perform!
 
@@ -76,7 +76,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         end
       end
 
-      n1_load :data do
+      n1_optimized :data do
         def perform(elements)
           Company.perform!
 
@@ -85,7 +85,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         end
       end
 
-      n1_load :with_arguments do
+      n1_optimized :with_arguments do
         def perform(elements, something)
           Company.perform!
 

@@ -45,7 +45,7 @@ module N1Loader
         respond_to?("#{name}_loader")
       end
 
-      def n1_load(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      def n1_optimized(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         loader ||= Class.new(N1Loader::Loader) do
           if block&.arity&.positive?
             define_method(:perform, &block)
