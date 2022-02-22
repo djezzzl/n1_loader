@@ -63,7 +63,9 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
       end
 
       n1_optimized :with_arguments do
-        def perform(elements, something)
+        argument :something
+
+        def perform(elements)
           Entity.perform!
 
           elements.each { |element| fulfill(element, [element, something]) }
@@ -102,7 +104,9 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
       end
 
       n1_optimized :with_arguments do
-        def perform(elements, something)
+        argument :something
+
+        def perform(elements)
           Company.perform!
 
           hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)

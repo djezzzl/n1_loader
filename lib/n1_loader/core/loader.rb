@@ -66,7 +66,7 @@ module N1Loader
       @loaded[element] = value
     end
 
-    def loaded # rubocop:disable Metrics/AbcSize
+    def loaded
       return @loaded if @loaded
 
       check_arguments!
@@ -74,9 +74,9 @@ module N1Loader
       @loaded = {}.compare_by_identity
 
       if elements.size == 1 && respond_to?(:single)
-        fulfill(elements.first, single(elements.first, *args))
+        fulfill(elements.first, single(elements.first))
       elsif elements.any?
-        perform(elements, *args)
+        perform(elements)
       end
 
       @loaded

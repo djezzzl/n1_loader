@@ -50,7 +50,10 @@ RSpec.describe N1Loader do
       end
 
       n1_optimized :with_arguments do
-        def perform(elements, something, anything)
+        argument :something
+        argument :anything
+
+        def perform(elements)
           elements.first.class.perform!
 
           elements.each do |element|
@@ -88,8 +91,8 @@ RSpec.describe N1Loader do
 
   describe "arguments support" do
     it "has to receive all arguments" do
-      expect { object.with_arguments }.to raise_error(ArgumentError)
-      expect { object.with_arguments("something") }.to raise_error(ArgumentError)
+      expect { object.with_arguments }.to raise_error(N1Loader::MissingArgument)
+      expect { object.with_arguments("something") }.to raise_error(N1Loader::MissingArgument)
       expect { object.with_arguments("something", anything: "anything") }.to raise_error(ArgumentError)
 
       expect(object.with_arguments("something", "anything")).to eq([object, "something", "anything"])
