@@ -152,7 +152,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
           expect do
             expect { objects.each { |object| object.with_arguments(something: "something") } }.to change(Entity, :count).by(1)
             expect { objects.each { |object| object.with_arguments(something: "something") } }.not_to change(Entity, :count)
-            expect { objects.each { |object| object.with_arguments(anything: "anything") } }.to change(Entity, :count).by(1)
+            expect { objects.each { |object| object.with_arguments(something: "anything") } }.to change(Entity, :count).by(1)
 
             objects.each do |object|
               expect(object.with_arguments(something: "something")).to eq([object, "something"])
