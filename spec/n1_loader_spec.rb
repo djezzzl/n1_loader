@@ -72,6 +72,17 @@ RSpec.describe N1Loader do
           something + anything
         end
       end
+
+      n1_optimized :with_named_arguments do
+        argument :something
+        argument :anything
+
+        def perform(elements, *)
+          elements.each do |element|
+            fulfill(element, [element, something, anything])
+          end
+        end
+      end
     end
   end
 
@@ -100,6 +111,18 @@ RSpec.describe N1Loader do
       expect { object.with_custom_arguments_key(2, 1) }.not_to change(klass, :count)
 
       expect { object.with_custom_arguments_key(2, 3) }.to change(klass, :count).by(1)
+    end
+
+    it "supports named arguments" do
+      expect do
+        object.with_named_arguments
+      end.to raise_error(N1Loader::MissingArgument, "Loader defined 2 arguments but 0 were given")
+      expect do
+        object.with_named_arguments("something")
+      end.to raise_error(N1Loader::MissingArgument,
+                         "Loader defined 2 arguments but 1 were given")
+
+      expect(object.with_named_arguments("something", "anything")).to eq([object, "something", "anything"])
     end
 
     it "works with preloading" do
