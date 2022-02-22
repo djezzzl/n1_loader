@@ -11,7 +11,9 @@ module N1Loader
     end
 
     def with(*args)
-      loaders[loader_class.arguments_key(*args)] ||= loader_class.new(elements, *args)
+      loader = loader_class.new(elements, *args)
+
+      loaders[loader.cache_key] ||= loader
     end
 
     private

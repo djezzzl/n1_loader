@@ -20,8 +20,12 @@ module N1Loader
         @arguments << name
       end
 
-      def arguments_key(*args)
-        args.map(&:object_id)
+      # Defines a custom cache key that is calculated for passed arguments.
+      def cache_key(&block)
+        define_method(:cache_key) do
+          check_arguments!
+          instance_exec(&block)
+        end
       end
     end
 
@@ -37,6 +41,10 @@ module N1Loader
       raise NotLoaded, "The data was not preloaded for the given element" unless loaded.key?(element)
 
       loaded[element]
+    end
+
+    def cache_key
+      args.map(&:object_id)
     end
 
     private
