@@ -150,12 +150,12 @@ RSpec.describe "N1Loader ActiveRecord integration" do
 
         it "works" do
           expect do
-            expect { objects.each { |object| object.with_arguments("something") } }.to change(Entity, :count).by(1)
-            expect { objects.each { |object| object.with_arguments("something") } }.not_to change(Entity, :count)
-            expect { objects.each { |object| object.with_arguments("anything") } }.to change(Entity, :count).by(1)
+            expect { objects.each { |object| object.with_arguments(something: "something") } }.to change(Entity, :count).by(1)
+            expect { objects.each { |object| object.with_arguments(something: "something") } }.not_to change(Entity, :count)
+            expect { objects.each { |object| object.with_arguments(anything: "anything") } }.to change(Entity, :count).by(1)
 
             objects.each do |object|
-              expect(object.with_arguments("something")).to eq([object, "something"])
+              expect(object.with_arguments(something: "something")).to eq([object, "something"])
             end
           end
             .to make_database_queries(matching: /entities/, count: 1)
@@ -169,7 +169,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         it "doesn't work" do
           expect do
             objects.each do |object|
-              object.with_arguments("something")
+              object.with_arguments(something: "something")
             end
           end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
         end
@@ -206,7 +206,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         it "works" do
           expect do
             objects.each do |object|
-              expect(object.company.with_arguments("something")).to eq([object, "something"])
+              expect(object.company.with_arguments(something: "something")).to eq([object, "something"])
             end
           end
             .to make_database_queries(matching: /entities/, count: 2)
@@ -222,7 +222,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         it "doesn't work" do
           expect do
             objects.each do |object|
-              object.company.with_arguments("something")
+              object.company.with_arguments(something: "something")
             end
           end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
         end
@@ -256,7 +256,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       it "doesn't work" do
         expect do
           objects.each do |object|
-            expect(object.with_arguments("something").first.company.id).to eq(object.id)
+            expect(object.with_arguments(something: "something").first.company.id).to eq(object.id)
           end
         end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
       end
