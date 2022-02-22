@@ -158,7 +158,7 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
   context "with arguments" do
     it "works" do
       expect do
-        Company.preload_associations_lazily.all.each { |company| company.with_arguments("something") }
+        Company.preload_associations_lazily.all.each { |company| company.with_arguments(something: "something") }
       end
         .to make_database_queries(matching: /entities/, count: 1)
         .and make_database_queries(matching: /companies/, count: 1)
@@ -166,14 +166,16 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
         .and change(Company, :count).by(1)
 
       expect do
-        Entity.preload_associations_lazily.all.each { |entity| entity.company.with_arguments("something") }
+        Entity.preload_associations_lazily.all.each { |entity| entity.company.with_arguments(something: "something") }
       end
         .to make_database_queries(matching: /entities/, count: 2)
         .and make_database_queries(matching: /companies/, count: 1)
         .and make_database_queries(count: 3)
 
       expect do
-        Company.preload_associations_lazily.each { |company| company.with_arguments("something").first.company }
+        Company.preload_associations_lazily.each do |company|
+          company.with_arguments(something: "something").first.company
+        end
       end
         .to make_database_queries(matching: /entities/, count: 1)
         .and make_database_queries(matching: /companies/, count: 2)
@@ -181,7 +183,7 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
 
       expect do
         Company.lazy_preload(with_arguments: :company).each do |company|
-          company.with_arguments("something").first.company
+          company.with_arguments(something: "something").first.company
         end
       end
         .to make_database_queries(matching: /entities/, count: 1)

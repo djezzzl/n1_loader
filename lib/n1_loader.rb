@@ -13,4 +13,5 @@ module N1Loader # :nodoc:
   class NotLoaded < Error; end
   class NotFilled < Error; end
   class MissingArgument < Error; end
+  class InvalidArgument < Error; end
 end

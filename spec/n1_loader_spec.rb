@@ -62,13 +62,26 @@ RSpec.describe N1Loader do
         end
       end
 
+      n1_optimized :with_optional_argument do
+        argument :something, optional: true
+        argument :anything
+
+        def perform(elements)
+          elements.first.class.perform!
+
+          elements.each do |element|
+            fulfill(element, [element, something, anything])
+          end
+        end
+      end
+
       n1_optimized :with_custom_arguments_key do
         argument :something
         argument :anything
 
         cache_key { something + anything }
 
-        def perform(elements, *)
+        def perform(elements)
           elements.first.class.perform!
 
           elements.each do |element|
@@ -92,30 +105,44 @@ RSpec.describe N1Loader do
   describe "arguments support" do
     it "has to receive all arguments" do
       expect { object.with_arguments }.to raise_error(N1Loader::MissingArgument)
-      expect { object.with_arguments("something") }.to raise_error(N1Loader::MissingArgument)
-      expect { object.with_arguments("something", anything: "anything") }.to raise_error(ArgumentError)
+      expect { object.with_arguments(something: "something") }.to raise_error(N1Loader::MissingArgument)
+      expect { object.with_arguments("something") }.to raise_error(ArgumentError)
 
-      expect(object.with_arguments("something", "anything")).to eq([object, "something", "anything"])
+      expect(object.with_arguments(something: "something",
+                                   anything: "anything")).to eq([object,
+                                                                 "something", "anything"])
+    end
+
+    it "supports optional arguments" do
+      expect { object.with_optional_argument }
+        .to raise_error(N1Loader::MissingArgument, "Loader requires 1..2 arguments but 0 were given")
+      expect(object.with_optional_argument(anything: 2)).to eq([object, nil, 2])
+      expect(object.with_optional_argument(something: 1, anything: 2)).to eq([object, 1, 2])
+      expect { object.with_optional_argument(tmp: 1, anything: 2) }
+        .to raise_error(N1Loader::InvalidArgument, "Loader doesn't define tmp argument")
     end
 
     it "can have custom arguments key" do
       # The following two has the same result for custom key, so we only do one perform
-      expect { object.with_custom_arguments_key(1, 2) }.to change(klass, :count).by(1)
-      expect { object.with_custom_arguments_key(2, 1) }.not_to change(klass, :count)
+      expect { object.with_custom_arguments_key(something: 1, anything: 2) }.to change(klass, :count).by(1)
+      expect { object.with_custom_arguments_key(something: 2, anything: 1) }.not_to change(klass, :count)
 
-      expect { object.with_custom_arguments_key(2, 3) }.to change(klass, :count).by(1)
+      expect { object.with_custom_arguments_key(something: 2, anything: 3) }.to change(klass, :count).by(1)
     end
 
     it "supports named arguments" do
       expect do
         object.with_custom_arguments_key
-      end.to raise_error(N1Loader::MissingArgument, "Loader defined 2 arguments but 0 were given")
+      end.to raise_error(N1Loader::MissingArgument, "Loader requires 2 arguments but 0 were given")
       expect do
-        object.with_custom_arguments_key("something")
+        object.with_custom_arguments_key(something: "something")
       end.to raise_error(N1Loader::MissingArgument,
-                         "Loader defined 2 arguments but 1 were given")
+                         "Loader requires 2 arguments but 1 were given")
 
-      expect(object.with_custom_arguments_key("something", "anything")).to eq([object, "something", "anything"])
+      expect(object.with_custom_arguments_key(something: "something",
+                                              anything: "anything")).to eq([
+                                                                             object, "something", "anything"
+                                                                           ])
     end
 
     it "works with preloading" do
@@ -123,7 +150,9 @@ RSpec.describe N1Loader do
 
       expect do
         objects.each do |object|
-          expect(object.with_arguments("something", "anything")).to eq([object, "something", "anything"])
+          expect(object.with_arguments(something: "something",
+                                       anything: "anything")).to eq([object,
+                                                                     "something", "anything"])
         end
       end.to change(klass, :count).by(1)
     end
@@ -132,33 +161,33 @@ RSpec.describe N1Loader do
       N1Loader::Preloader.new(objects).preload(:with_arguments)
 
       expect do
-        objects.each { |object| object.with_arguments("something", "anything") }
+        objects.each { |object| object.with_arguments(something: "something", anything: "anything") }
       end.to change(klass, :count).by(1)
 
       expect do
-        objects.each { |object| object.with_arguments("something2", "anything") }
+        objects.each { |object| object.with_arguments(something: "something2", anything: "anything") }
       end.to change(klass, :count).by(1)
 
       expect do
-        objects.each { |object| object.with_arguments("something", "anything2") }
+        objects.each { |object| object.with_arguments(something: "something", anything: "anything2") }
       end.to change(klass, :count).by(1)
 
       expect do
-        objects.each { |object| object.with_arguments("something", "anything") }
+        objects.each { |object| object.with_arguments(something: "something", anything: "anything") }
       end.not_to change(klass, :count)
     end
 
     it "supports reloading" do
       expect do
-        object.with_arguments("something", "anything")
+        object.with_arguments(something: "something", anything: "anything")
       end.to change(klass, :count).by(1)
 
       expect do
-        object.with_arguments("something", "anything", reload: true)
+        object.with_arguments(something: "something", anything: "anything", reload: true)
       end.to change(klass, :count).by(1)
 
       expect do
-        object.with_arguments("something", "anything")
+        object.with_arguments(something: "something", anything: "anything")
       end.not_to change(klass, :count)
     end
   end

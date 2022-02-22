@@ -13,11 +13,16 @@ module N1Loader
       #
       # First defined argument will have the value of first passed argument,
       # meaning the order is important.
-      def argument(name)
+      #
+      # @param name [Symbol]
+      # @param opts [Hash]
+      # @option opts [Boolean] optional false by default
+      def argument(name, **opts)
         @arguments ||= []
-        index = @arguments.size
-        define_method(name) { args[index] }
-        @arguments << name
+
+        define_method(name) { args[name] }
+
+        @arguments << opts.merge(name: name)
       end
 
       # Defines a custom cache key that is calculated for passed arguments.
@@ -29,7 +34,7 @@ module N1Loader
       end
     end
 
-    def initialize(elements, *args)
+    def initialize(elements, **args)
       @elements = elements
       @args = args
     end
@@ -44,18 +49,45 @@ module N1Loader
     end
 
     def cache_key
-      args.map(&:object_id)
+      check_arguments!
+      args.values.map(&:object_id)
     end
 
     private
 
     attr_reader :elements, :args
 
-    def check_arguments!
-      return unless (required = self.class.arguments)
-      return if required.size == args.size
+    def check_missing_arguments! # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      return unless (arguments = self.class.arguments)
 
-      raise MissingArgument, "Loader defined #{required.size} arguments but #{args.size} were given"
+      min = arguments.count { |argument| !argument[:optional] }
+      max = arguments.count
+
+      return if args.size >= min && args.size <= max
+
+      str =
+        if min == max
+          max.to_s
+        else
+          "#{min}..#{max}"
+        end
+
+      raise MissingArgument, "Loader requires #{str} arguments but #{args.size} were given"
+    end
+
+    def check_arguments!
+      check_missing_arguments!
+      check_invalid_arguments!
+    end
+
+    def check_invalid_arguments!
+      return unless (arguments = self.class.arguments)
+
+      args.each_key do |arg|
+        next if arguments.find { |argument| argument[:name] == arg }
+
+        raise InvalidArgument, "Loader doesn't define #{arg} argument"
+      end
     end
 
     def perform(_elements)
