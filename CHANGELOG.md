@@ -1,4 +1,12 @@
-## [1.2.0]
+## [1.3.0] - 2022-02-22
+
+- add support of named arguments with `argument <name>`
+
+BREAKING CHANGES:
+- rename `n1_load` to `n1_optimized`
+- rework `def self.arguments_key` to `cache_key`
+
+## [1.2.0] - 2022-01-14
 
 - Introduce arguments support.
 
