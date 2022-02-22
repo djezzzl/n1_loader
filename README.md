@@ -200,13 +200,13 @@ class User
 end
 
 user = User.new
-user.orders_count(:gifts) # The loader will be performed first time for this argument
-user.orders_count(:sales) # The loader will be performed first time for this argument
-user.orders_count(:gifts) # The cached value will be used
+user.orders_count(type: :gifts) # The loader will be performed first time for this argument
+user.orders_count(type: :sales) # The loader will be performed first time for this argument
+user.orders_count(type: :gifts) # The cached value will be used
 
 users = [User.new, User.new]
 N1Loader::Preloader.new(users).preload(:orders_count)
-users.map { |user| user.orders_count(:gifts) } # No N+1 here
+users.map { |user| user.orders_count(type: :gifts) } # No N+1 here
 ```
 
 _Note_: By default, we use `arguments.map(&:object_id)` to identify arguments but in some cases, 
@@ -230,8 +230,8 @@ class User
 end
 
 user = User.new
-user.orders_count(Sale.first) # perform will be executed and value will be cached
-user.orders_count(Sale.first) # the cached value will be returned
+user.orders_count(sale: Sale.first) # perform will be executed and value will be cached
+user.orders_count(sale: Sale.first) # the cached value will be returned
 ```
 
 

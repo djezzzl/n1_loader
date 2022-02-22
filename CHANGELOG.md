@@ -1,3 +1,11 @@
+## [1.4.0] - 2022-02-22
+
+- add support of optional arguments
+
+BREAKING CHANGES:
+- rework arguments to use single definition through `argument <name>` only
+- use keyword arguments
+
 ## [1.3.0] - 2022-02-22
 
 - add support of named arguments with `argument <name>`
