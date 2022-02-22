@@ -10,8 +10,8 @@ module N1Loader
       @elements = elements
     end
 
-    def with(*args)
-      loader = loader_class.new(elements, *args)
+    def with(**args)
+      loader = loader_class.new(elements, **args)
 
       loaders[loader.cache_key] ||= loader
     end

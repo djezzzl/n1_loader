@@ -6,7 +6,7 @@ module N1Loader
     module LoaderCollectionPatch
       attr_accessor :context_setup
 
-      def with(*args)
+      def with(**args)
         result = super
 
         result.context_setup = context_setup if context_setup && result.context_setup.nil?

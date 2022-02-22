@@ -47,7 +47,7 @@ module N1Loader
 
       def n1_optimized(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         loader ||= Class.new(N1Loader::Loader) do
-          if block&.arity&.positive?
+          if block.arity == 1
             define_method(:perform, &block)
           else
             class_eval(&block)
@@ -73,10 +73,10 @@ module N1Loader
           instance_variable_get(loader_variable_name) || send("#{loader_name}_reload")
         end
 
-        define_method(name) do |*args, reload: false|
+        define_method(name) do |reload: false, **args|
           send("#{loader_name}_reload") if reload
 
-          send(loader_name).with(*args).for(self)
+          send(loader_name).with(**args).for(self)
         end
 
         [name, loader_name, loader_variable_name]
