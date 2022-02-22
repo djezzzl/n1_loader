@@ -213,14 +213,14 @@ class User
   include N1Loader::Loadable
 
   n1_optimized :orders_count do
+    argument :sale 
+    
+    cache_key { sale.id }
+    
     def perform(users, sale)
       orders_per_user = Order.where(sale: sale, user: users).group(:user_id).count
       
       users.each { |user| fulfill(user, orders_per_user[user.id]) }
-    end
-
-    def self.arguments_key(sale)
-      sale.id
     end
   end
 end
