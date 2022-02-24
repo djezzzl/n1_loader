@@ -1,3 +1,7 @@
+## [1.4.1] - 2022-02-24
+
+- Fix preloading of invalid objects
+
 ## [1.4.0] - 2022-02-22
 
 - add support of optional arguments
