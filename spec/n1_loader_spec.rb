@@ -95,6 +95,12 @@ RSpec.describe N1Loader do
   let(:object) { klass.new }
   let(:objects) { [klass.new, klass.new] }
 
+  it "works with unsupported objects" do
+    expect do
+      N1Loader::Preloader.new([object, 123]).preload(:with_arguments)
+    end.not_to raise_error(NoMethodError)
+  end
+
   context "when fulfill was not used" do
     it "throws error" do
       expect { object.missing_fulfill }
