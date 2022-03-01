@@ -129,6 +129,9 @@ end
 user = User.new
 user.orders_count # => loader is executed first time and value was cached
 user.orders_count(reload: true) # => loader is executed again and a new value was cached
+# or
+user.n1_clear_cache
+user.orders_count
 
 users = [User.new, User.new]
 N1Loader::Preloader.new(users).preload(:orders_count) # => loader was initialized but not yet executed

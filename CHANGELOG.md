@@ -1,3 +1,7 @@
+## [1.4.2] - 2022-03-01
+
+- Add n1_clear_cache method which is useful for cases like reload in ActiveRecord
+
 ## [1.4.1] - 2022-02-24
 
 - Fix preloading of invalid objects
