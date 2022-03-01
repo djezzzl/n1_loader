@@ -32,6 +32,12 @@ module N1Loader
       send("#{name}_loader=", loader_collection)
     end
 
+    def n1_clear_cache
+      self.class.n1_loaders.each do |name|
+        n1_loader_set(name, nil)
+      end
+    end
+
     def self.included(base)
       base.extend(ClassMethods)
     end
@@ -45,6 +51,10 @@ module N1Loader
         respond_to?("#{name}_loader")
       end
 
+      def n1_loaders
+        @n1_loaders ||= superclass.respond_to?(:n1_loaders) ? superclass.n1_loaders.dup : []
+      end
+
       def n1_optimized(name, loader = nil, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         loader ||= Class.new(N1Loader::Loader) do
           if block.arity == 1
@@ -55,6 +65,8 @@ module N1Loader
         end
         loader_name = "#{name}_loader"
         loader_variable_name = "@#{loader_name}"
+
+        n1_loaders << name
 
         define_singleton_method(loader_name) do
           loader
