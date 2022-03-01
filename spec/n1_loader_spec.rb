@@ -92,6 +92,18 @@ RSpec.describe N1Loader do
     end
   end
 
+  let(:child_klass) do
+    Class.new(klass) do
+      n1_optimized :child_something do |elements|
+        elements.first.class.perform!
+
+        elements.each do |element|
+          fulfill(element, [element])
+        end
+      end
+    end
+  end
+
   let(:object) { klass.new }
   let(:objects) { [klass.new, klass.new] }
 
@@ -105,6 +117,34 @@ RSpec.describe N1Loader do
     it "throws error" do
       expect { object.missing_fulfill }
         .to raise_error(N1Loader::NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method")
+    end
+  end
+
+  describe "clear cache" do
+    it "works" do
+      expect { object.inline }.to change(klass, :count).by(1)
+      expect { object.inline }.not_to change(klass, :count)
+      object.n1_clear_cache
+      expect { object.inline }.to change(klass, :count).by(1)
+      expect { object.inline }.not_to change(klass, :count)
+    end
+
+    context "with parent loader" do
+      let(:object) { child_klass.new }
+
+      it "works" do
+        expect { object.inline }.to change(child_klass, :count).by(1)
+        expect { object.child_something }.to change(child_klass, :count).by(1)
+        expect { object.inline }.not_to change(child_klass, :count)
+        expect { object.child_something }.not_to change(child_klass, :count)
+
+        object.n1_clear_cache
+
+        expect { object.inline }.to change(child_klass, :count).by(1)
+        expect { object.child_something }.to change(child_klass, :count).by(1)
+        expect { object.inline }.not_to change(child_klass, :count)
+        expect { object.child_something }.not_to change(child_klass, :count)
+      end
     end
   end
 
