@@ -31,11 +31,31 @@ gem 'n1_loader'
 You can add integration with [ActiveRecord][5] by:
 ```ruby
 gem 'n1_loader', require: 'n1_loader/active_record'
+
+# You also may be interested in injecting it to models
+class ActiveRecord::Base
+  include N1Loader::Loadable
+  
+  def reload(*)
+    n1_clear_cache
+    super
+  end
+end
 ```
 
 You can add the integration with [ActiveRecord][5] and [ArLazyPreload][6] by:
 ```ruby
 gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
+
+# You also may be interested in injecting it to models
+class ActiveRecord::Base
+  include N1Loader::Loadable
+
+  def reload(*)
+    n1_clear_cache
+    super
+  end
+end
 ```
 
 ## Usage
