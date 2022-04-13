@@ -17,10 +17,13 @@ module N1Loader
       # @param name [Symbol]
       # @param opts [Hash]
       # @option opts [Boolean] optional false by default
+      # @option opts [Proc] default
       def argument(name, **opts)
+        opts[:optional] = true if opts[:default]
+
         @arguments ||= []
 
-        define_method(name) { args[name] }
+        define_method(name) { args[name] ||= opts[:default]&.call }
 
         @arguments << opts.merge(name: name)
       end
