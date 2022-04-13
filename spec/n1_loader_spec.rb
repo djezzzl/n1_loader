@@ -75,6 +75,19 @@ RSpec.describe N1Loader do
         end
       end
 
+      n1_optimized :with_default_argument do
+        argument :something, default: -> { [] }
+        argument :anything
+
+        def perform(elements)
+          elements.first.class.perform!
+
+          elements.each do |element|
+            fulfill(element, [element, something, anything])
+          end
+        end
+      end
+
       n1_optimized :with_custom_arguments_key do
         argument :something
         argument :anything
@@ -165,6 +178,15 @@ RSpec.describe N1Loader do
       expect(object.with_optional_argument(anything: 2)).to eq([object, nil, 2])
       expect(object.with_optional_argument(something: 1, anything: 2)).to eq([object, 1, 2])
       expect { object.with_optional_argument(tmp: 1, anything: 2) }
+        .to raise_error(N1Loader::InvalidArgument, "Loader doesn't define tmp argument")
+    end
+
+    it "supports default arguments" do
+      expect { object.with_default_argument }
+        .to raise_error(N1Loader::MissingArgument, "Loader requires 1..2 arguments but 0 were given")
+      expect(object.with_default_argument(anything: 2)).to eq([object, [], 2])
+      expect(object.with_default_argument(something: 1, anything: 2)).to eq([object, 1, 2])
+      expect { object.with_default_argument(tmp: 1, anything: 2) }
         .to raise_error(N1Loader::InvalidArgument, "Loader doesn't define tmp argument")
     end
 
