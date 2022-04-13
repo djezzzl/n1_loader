@@ -240,7 +240,7 @@ class User
   include N1Loader::Loadable
 
   n1_optimized :orders_count do
-    argument :sale 
+    argument :sale, optional: true, default: -> { Sale.last }
     
     cache_key { sale.id }
     
