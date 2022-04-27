@@ -6,6 +6,8 @@
 Are you tired of fixing [N+1 issues][7]? Does it feel unnatural to you to fix it case by case in places where you need the data?
 We have a solution for you! 
 
+> [Toptal](https://www.toptal.com#snag-only-shrewd-web-development-experts) is hiring! [Join](https://www.toptal.com#snag-only-shrewd-web-development-experts) as Freelancer or [write me](mailto:lawliet.djez@gmail.com) if you want to join Core team.
+
 [N1Loader][8] is designed to solve the issue for good!
 
 It has many benefits:
