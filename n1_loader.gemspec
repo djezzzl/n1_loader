@@ -25,10 +25,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "activerecord", ">= 5", "< 7"
   spec.add_development_dependency "ar_lazy_preload", ">= 0.6"
   spec.add_development_dependency "db-query-matchers", "~> 0.10"
+  spec.add_development_dependency "graphql", "~> 2.0"
   spec.add_development_dependency "rails", ">= 5"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4"
   spec.add_development_dependency "rubocop", "~> 1.7"
   spec.add_development_dependency "sqlite3", "~> 1.3"
-  spec.add_development_dependency "graphql", "~> 2.0"
 end
