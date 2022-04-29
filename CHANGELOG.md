@@ -1,3 +1,8 @@
+## [1.4.4] - 2022/04/29
+
+- Inject `N1Loader::Loadable` to `ActiveRecord::Base` automatically
+- Make `reload` to call `n1_clear_cache`
+
 ## [1.4.3] - 2022-04-13
 
 - Add `default` support to arguments
