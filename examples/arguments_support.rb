@@ -23,8 +23,20 @@ class User < ActiveRecord::Base
   has_many :payments
 
   n1_optimized :payments_total do
+    # Arguments can be:
+    # argument :something, optional: true
+    # argument :something, default: -> { 100 }
+    #
+    # Note: do not use mutable (mostly timing related) defaults like:
+    # argument :from, default -> { 2.minutes.from_now }
+    # because such values will be unique for every loader call which will make N+1 issue stay
     argument :from
     argument :to
+
+    # This is used to define logic how loaders are compared to each other
+    # default is:
+    # cache_key { *arguments.map(&:object_id) }
+    cache_key { [from, to] }
 
     def perform(users)
       total_per_user =
