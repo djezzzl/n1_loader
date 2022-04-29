@@ -16,6 +16,7 @@ end
 ActiveSupport.on_load(:active_record) do
   require_relative "active_record/loader"
   require_relative "active_record/loader_collection"
+  require_relative "active_record/base"
 
   case ActiveRecord::VERSION::MAJOR
   when 6
@@ -25,4 +26,5 @@ ActiveSupport.on_load(:active_record) do
   end
 
   ActiveRecord::Associations::Preloader.prepend(N1Loader::ActiveRecord::Associations::Preloader)
+  ActiveRecord::Base.include(N1Loader::ActiveRecord::Base)
 end

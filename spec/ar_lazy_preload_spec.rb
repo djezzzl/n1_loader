@@ -34,8 +34,6 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
     end
 
     stub_const("Entity", Class.new(ActiveRecord::Base) do
-      include N1Loader::Loadable
-
       self.table_name = :entities
 
       has_one :company, class_name: "Company"
@@ -74,8 +72,6 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
     end)
 
     stub_const("Company", Class.new(ActiveRecord::Base) do
-      include N1Loader::Loadable
-
       self.table_name = :companies
 
       belongs_to :entity, class_name: "Entity"
