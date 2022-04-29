@@ -3,109 +3,147 @@
 [![CircleCI][1]][2]
 [![Gem Version][3]][4]
 
-Are you tired of fixing [N+1 issues][7]? Does it feel unnatural to you to fix it case by case in places where you need the data?
-We have a solution for you! 
+N1Loader is designed to provide a way for avoiding [N+1 issues][7] of any kind. 
+For example, it can help with resolving N+1 for:
+- database querying (most common case)
+- 3rd party service calls
+- complex calculations
+- and many more
 
 > [Toptal](https://www.toptal.com#snag-only-shrewd-web-development-experts) is hiring! [Join](https://www.toptal.com#snag-only-shrewd-web-development-experts) as Freelancer or [write me](mailto:lawliet.djez@gmail.com) if you want to join Core team.
 
-[N1Loader][8] is designed to solve the issue for good!
+## Killer feature for GraphQL API
 
-It has many benefits:
-- it can be [isolated](#isolated-loaders)
-- it loads data [lazily](#lazy-loading)
-- it supports [shareable loaders](#shareable-loaders) between multiple classes
-- it supports [reloading](#reloading)
-- it supports optimized [single object loading](#optimized-single-case)
-- it supports [arguments](#arguments)
-- it has an integration with [ActiveRecord][5] which makes it brilliant ([example](#activerecord))
-- it has an integration with [ArLazyPreload][6] which makes it excellent ([example](#arlazypreload))
+N1Loader in combination with [ArLazyPreload][6] is a killer feature for your GraphQL API. 
+Give it a try now and see incredible results instantly!
 
-... and even more features to come! Stay tuned!
+```ruby
+gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
+```
 
-## Installation
+## Enhance [ActiveRecord][5]
 
-Add this line to your application's Gemfile:
+Are you working with well-known Rails application? Try it out how well N1Loader fulfills missing gaps!
+
+```ruby
+gem 'n1_loader', require: 'n1_loader/active_record'
+```
+
+Are you ready to forget about N+1 once and for all? Install [ArLazyPreload][6] and see dreams come true!
+
+```ruby
+gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
+```
+
+## Standalone mode
+
+Are you not working with [ActiveRecord][5]? N1Loader is ready to be used as standalone solution! ([full snippet](examples/core.rb))
 
 ```ruby
 gem 'n1_loader'
 ```
 
-You can add integration with [ActiveRecord][5] by:
+### How it works?
+
+N1Loader provides DSL that allows you to define N+1 ready loaders that can 
+be injected into your objects in a way that you can avoid N+1 issues.
+
+> _Disclaimer_: examples below are working but designed to show N1Loader potentials only. 
+In real live applications, N1Loader can applied anywhere and in more [elegant way](examples/isolated_loader.rb).  
+
+Let's look at simple example below ([full snippet](examples/active_record_integration.rb)):
 ```ruby
-gem 'n1_loader', require: 'n1_loader/active_record'
+class User < ActiveRecord::Base
+  has_many :payments
 
-# You also may be interested in injecting it to models
-class ActiveRecord::Base
-  include N1Loader::Loadable
-  
-  def reload(*)
-    n1_clear_cache
-    super
-  end
-end
-```
+  n1_optimized :payments_total do |users|
+    total_per_user = 
+      Payment.group(:user_id)
+        .where(user: users)
+        .sum(:amount)
+        .tap { |h| h.default = 0 }
 
-You can add the integration with [ActiveRecord][5] and [ArLazyPreload][6] by:
-```ruby
-gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
-
-# You also may be interested in injecting it to models
-class ActiveRecord::Base
-  include N1Loader::Loadable
-
-  def reload(*)
-    n1_clear_cache
-    super
-  end
-end
-```
-
-## Usage
-
-```ruby
-class User
-  include N1Loader::Loadable
-
-  # with inline loader
-  n1_optimized :orders_count do |users|
-    orders_per_user = Order.where(user: users).group(:user_id).count
-    
-    users.each { |user| fulfill(user, orders_per_user[user.id]) }
+    users.each do |user|
+      total = total_per_user[user.id]
+      fulfill(user, total)
+    end
   end
 end
 
-# For single object
-user = User.new
-user.orders_count 
+class Payment < ActiveRecord::Base
+  belongs_to :user
 
-# For multiple objects without N+1
-users = [User.new, User.new]
-N1Loader::Preloader.new(users).preload(:orders_count)
-users.map(&:orders_count)
+  validates :amount, presence: true
+end
+
+# A user has many payments. 
+# Assuming, we want to know for group of users, what is a total of their payments, we can do the following:
+
+# Has N+1 issue
+p User.all.map { |user| user.payments.sum(&:amount) }
+
+# Has no N+1 but we load too many data that we don't actually need
+p User.all.includes(:payments).map { |user| user.payments.sum(&:amount) }
+
+# Has no N+1 and we load only what we need
+p User.all.includes(:payments_total).map { |user| user.payments_total }
 ```
 
-### Lazy loading
+Let's assume now, that we want to calculate the total of payments for the given period for a group of users. 
+N1Loader can do that as well! ([full snippet](examples/arguments_support.rb)) 
 
 ```ruby
-class User
-  include N1Loader::Loadable
+class User < ActiveRecord::Base
+  has_many :payments
 
-  # with inline loader
-  n1_optimized :orders_count do |users|
-    orders_per_user = Order.where(user: users).group(:user_id).count
+  n1_optimized :payments_total do
+    argument :from
+    argument :to
 
-    users.each { |user| fulfill(user, orders_per_user[user.id]) }
+    def perform(users)
+      total_per_user =
+        Payment
+          .group(:user_id)
+          .where(created_at: from..to)
+          .where(user: users)
+          .sum(:amount)
+          .tap { |h| h.default = 0 }
+
+      users.each do |user|
+        total = total_per_user[user.id]
+        fulfill(user, total)
+      end
+    end
   end
 end
 
-user = User.new # => nothing was done for loading
-user.orders_count # => first time loading
+class Payment < ActiveRecord::Base
+  belongs_to :user
 
-users = [User.new, User.new] # => nothing was done for loading
-N1Loader::Preloader.new([users]).preload(:orders_count) # => we only initialized loader but didn't perform it yet
-users.map(&:orders_count) # => loading has happen for the first time (without N+1)
+  validates :amount, presence: true
+end
+
+# Has N+1
+p User.all.map { |user| user.payments.select { |payment| payment.created_at >= from && payment.created_at <= to }.sum(&:amount) }
+
+# Has no N+1 but we load too many data that we don't need
+p User.all.includes(:payments).map { |user| user.payments.select { |payment| payment.created_at >= from && payment.created_at <= to }.sum(&:amount) }
+
+# Has no N+1 and calculation is the most efficient
+p User.all.includes(:payments_total).map { |user| user.payments_total(from: from, to: to) }
 ```
 
+### Features and benefits
+
+- N1Loader doesn't use Promises which means it's easy to debug
+- Doesn't require injection to objects, can be used in [isolation](examples/isolated_loader.rb)
+- Loads data [lazily](examples/lazy_loading.rb)
+- Loaders can be [shared](examples/shared_loader.rb) between multiple classes
+- Loaded data can be [re-fetched](examples/reloading.rb)
+- it supports optimized [single object loading](#optimized-single-case)
+- it supports [arguments](#arguments)
+- it has an integration with [ActiveRecord][5] which makes it brilliant ([example](#activerecord))
+- it has an integration with [ArLazyPreload][6] which makes it excellent ([example](#arlazypreload))
 
 ### Shareable loaders
 
@@ -161,22 +199,6 @@ users.map(&:orders_count) # => loader was executed first time without N+1 issue 
 
 N1Loader::Preloader.new(users).preload(:orders_count) # => loader was initialized again but not yet executed
 users.map(&:orders_count) # => new loader was executed first time without N+1 issue and new values were cached
-```
-
-### Isolated loaders
-
-```ruby
-class IsolatedLoader < N1Loader::Loader
-  def perform(elements)
-    elements.each { |element| fulfill(element, [element]) }
-  end
-end
-
-objects = [1, 2, 3, 4]
-loader = IsolatedLoader.new(objects)
-objects.each do |object|
-  loader.for(object) # => it has no N+1 and it doesn't require to be injected in the class
-end
 ```
 
 ### Optimized single case
