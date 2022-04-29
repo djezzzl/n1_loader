@@ -4,6 +4,8 @@ module N1Loader
   module ActiveRecord
     # Extension module for ActiveRecord::Base
     module Base
+      extend ActiveSupport::Concern
+
       include N1Loader::Loadable
 
       # Clear N1Loader cache on reloading the object
