@@ -1,5 +1,7 @@
 AllCops:
   TargetRubyVersion: 2.5
+  Exclude:
+    - examples/**/*
 
 Style/StringLiterals:
   Enabled: true
