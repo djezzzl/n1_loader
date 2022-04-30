@@ -3,7 +3,7 @@
 [![CircleCI][1]][2]
 [![Gem Version][3]][4]
 
-N1Loader is designed to provide a way for avoiding [N+1 issues][7] of any kind. 
+N1Loader is designed to provide a simple way for avoiding [N+1 issues][7] of any kind. 
 For example, it can help with resolving N+1 for:
 - database querying (most common case)
 - 3rd party service calls
