@@ -21,10 +21,12 @@ ActiveSupport.on_load(:active_record) do
   case ActiveRecord::VERSION::MAJOR
   when 6
     require_relative "active_record/associations_preloader_v6"
-  else
+  when 5
     require_relative "active_record/associations_preloader_v5"
+  else
+    require_relative "active_record/associations_preloader_v7"
   end
 
-  ActiveRecord::Associations::Preloader.prepend(N1Loader::ActiveRecord::Associations::Preloader)
+  ActiveRecord::Associations::Preloader::Branch.prepend(N1Loader::ActiveRecord::Associations::Preloader)
   ActiveRecord::Base.include(N1Loader::ActiveRecord::Base)
 end
