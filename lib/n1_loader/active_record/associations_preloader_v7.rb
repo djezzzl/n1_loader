@@ -16,7 +16,7 @@ module N1Loader
           N1Loader::Preloader.new(records).preload(reflection.key)
         end
 
-        def grouped_records
+        def grouped_records # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
           n1_load_records, records = source_records.partition do |record|
             record.class.respond_to?(:n1_loader_defined?) && record.class.n1_loader_defined?(association)
           end
@@ -29,6 +29,7 @@ module N1Loader
           records.each do |record|
             reflection = record.class._reflect_on_association(association)
             next if polymorphic_parent && !reflection || !record.association(association).klass
+
             (h[reflection] ||= []) << record
           end
           h
