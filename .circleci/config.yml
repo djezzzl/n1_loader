@@ -116,20 +116,26 @@ workflows:
             exclude:
               # Ruby 2.5 and AR Lazy Preload 1+
               - ruby-version: "2.5"
-                activerecord-gemfile: "ar_5_latest"
                 ar_lazy_preload-gemfile: "ar_lazy_preload_master"
+                activerecord-gemfile: "ar_5_latest"
 
               - ruby-version: "2.5"
-                activerecord-gemfile: "ar_6_latest"
                 ar_lazy_preload-gemfile: "ar_lazy_preload_master"
+                activerecord-gemfile: "ar_6_latest"
+
+              - ruby-version: "2.5"
+                ar_lazy_preload-gemfile: "ar_lazy_preload_master"
+                activerecord-gemfile: "ar_7_latest"
 
               # AR 5 and ruby 3+
               - ruby-version: "latest"
                 activerecord-gemfile: "ar_5_latest"
                 ar_lazy_preload-gemfile: "ar_lazy_preload_0.6.1"
+
               - ruby-version: "latest"
                 activerecord-gemfile: "ar_5_latest"
                 ar_lazy_preload-gemfile: "ar_lazy_preload_master"
+
 
           name: ruby-<< matrix.ruby-version >>-<< matrix.activerecord-gemfile >>-<< matrix.ar_lazy_preload-gemfile >>
       - rubocop:
