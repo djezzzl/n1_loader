@@ -1,3 +1,7 @@
+## [1.5.0] - 2022/05/01
+
+- Add support of Rails 7
+
 ## [1.4.4] - 2022/04/29
 
 - Inject `N1Loader::Loadable` to `ActiveRecord::Base` automatically
