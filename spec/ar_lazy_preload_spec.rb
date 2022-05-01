@@ -17,6 +17,8 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
 
     ActiveRecord::Associations::CollectionAssociation.prepend(ArLazyPreload::CollectionAssociation)
     ActiveRecord::Associations::CollectionProxy.prepend(ArLazyPreload::CollectionProxy)
+
+    ArLazyPreload::Preloader.patch_for_rails_7! if ActiveRecord::VERSION::MAJOR >= 7
   end
 
   before do
