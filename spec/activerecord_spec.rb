@@ -209,7 +209,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       let(:objects) { Entity.includes(company: :with_arguments) }
 
       context "without ArLazyPreload" do
-        before { skip if ar_lazy_preload_defined? && !ar_version_5? }
+        before { skip if ar_lazy_preload_defined? && !ar_version_5? && !ar_version_7? }
 
         it "works" do
           expect do
@@ -225,7 +225,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       end
 
       context "with ArLazyPreload" do
-        before { skip unless ar_lazy_preload_defined? && !ar_version_5? }
+        before { skip unless ar_lazy_preload_defined? && !ar_version_5? && !ar_version_7? }
 
         it "doesn't work" do
           expect do

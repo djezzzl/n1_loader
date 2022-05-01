@@ -5,3 +5,11 @@ N1Loader::LoaderCollection.define_method :preloaded_records do
 
   with.preloaded_records
 end
+
+N1Loader::LoaderCollection.define_method :runnable_loaders do
+  [self]
+end
+
+N1Loader::LoaderCollection.define_method :run? do
+  true
+end

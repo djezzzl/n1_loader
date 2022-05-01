@@ -25,4 +25,8 @@ RSpec.configure do |config|
   def ar_version_5?
     ActiveRecord::VERSION::MAJOR == 5
   end
+
+  def ar_version_7?
+    ActiveRecord::VERSION::MAJOR == 7
+  end
 end
