@@ -106,7 +106,8 @@ workflows:
               ]
               activerecord-gemfile: [
                 "ar_5_latest",
-                "ar_6_latest"
+                "ar_6_latest",
+                "ar_7_latest"
               ]
               ar_lazy_preload-gemfile: [
                 "ar_lazy_preload_0.6.1",
