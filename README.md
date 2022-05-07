@@ -13,6 +13,8 @@ For example, it can help with resolving N+1 for:
 
 > [Toptal](https://www.toptal.com#snag-only-shrewd-web-development-experts) is hiring! [Join](https://www.toptal.com#snag-only-shrewd-web-development-experts) as Freelancer or [write me](mailto:lawliet.djez@gmail.com) if you want to join Core team.
 
+___Support:___ ActiveRecord 5, 6, and 7.
+
 ## Killer feature for GraphQL API
 
 N1Loader in combination with [ArLazyPreload][6] is a killer feature for your GraphQL API. 
