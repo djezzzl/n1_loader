@@ -2,6 +2,7 @@
 
 [![CircleCI][1]][2]
 [![Gem Version][3]][4]
+[![][9]][10]
 
 N1Loader is designed to provide a simple way for avoiding [N+1 issues][7] of any kind. 
 For example, it can help with resolving N+1 for:
@@ -145,6 +146,78 @@ p User.all.includes(:payments_total).map { |user| user.payments_total(from: from
 - Has [integration](examples/active_record_integration.rb) with [ActiveRecord][5] which makes it brilliant
 - Has [integration](examples/ar_lazy_integration.rb) with [ArLazyPreload][6] which makes it excellent
 
+## Funding
+
+### Open Collective Backers
+
+You're an individual who wants to support the project with a monthly donation. Your logo will be available on the Github page. [[Become a backer](https://opencollective.com/n1_loader#backer)]
+
+<a href="https://opencollective.com/n1_loader/backer/0/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/0/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/1/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/1/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/2/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/2/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/3/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/3/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/4/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/4/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/5/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/5/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/6/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/6/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/7/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/7/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/8/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/8/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/9/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/9/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/10/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/10/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/11/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/11/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/12/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/12/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/13/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/13/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/14/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/14/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/15/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/15/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/16/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/16/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/17/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/17/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/18/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/18/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/19/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/19/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/20/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/20/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/21/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/21/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/22/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/22/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/23/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/23/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/24/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/24/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/25/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/25/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/26/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/26/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/27/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/27/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/28/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/28/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/backer/29/website" target="_blank"><img src="https://opencollective.com/n1_loader/backer/29/avatar.svg"></a>
+
+### Open Collective Sponsors
+
+You're an organization that wants to support the project with a monthly donation. Your logo will be available on the Github page. [[Become a sponsor](https://opencollective.com/n1_loader#sponsor)]
+
+<a href="https://opencollective.com/n1_loader/sponsor/0/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/1/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/2/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/3/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/4/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/5/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/6/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/7/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/8/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/9/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/9/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/10/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/10/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/11/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/11/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/12/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/12/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/13/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/13/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/14/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/14/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/15/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/15/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/16/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/16/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/17/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/17/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/18/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/18/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/19/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/19/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/20/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/20/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/21/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/21/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/22/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/22/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/23/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/23/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/24/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/24/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/25/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/25/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/26/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/26/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/27/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/27/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/28/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/28/avatar.svg"></a>
+<a href="https://opencollective.com/n1_loader/sponsor/29/website" target="_blank"><img src="https://opencollective.com/n1_loader/sponsor/29/avatar.svg"></a>
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/djezzzl/n1_loader. 
@@ -174,3 +247,5 @@ Copyright (c) Evgeniy Demin. See [LICENSE.txt](LICENSE.txt) for further details.
 [6]: https://github.com/DmitryTsepelev/ar_lazy_preload
 [7]: https://stackoverflow.com/questions/97197/what-is-the-n1-selects-problem-in-orm-object-relational-mapping
 [8]: https://github.com/djezzzl/n1_loader
+[9]: https://opencollective.com/n1_loader/tiers/badge.svg
+[10]: https://opencollective.com/n1_loader#support
