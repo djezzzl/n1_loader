@@ -27,6 +27,7 @@ gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
 ## Enhance [ActiveRecord][5]
 
 Are you working with well-known Rails application? Try it out and see how well N1Loader fulfills missing gaps when you can't define ActiveRecord associations!
+Check out the detailed [guide](guides/enhanced-activerecord.md) with examples or its [short version](examples/active_record_integration.rb).
 
 ```ruby
 gem 'n1_loader', require: 'n1_loader/active_record'
