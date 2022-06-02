@@ -14,8 +14,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 2.5.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/djezzzl/database_consistency"
-  spec.metadata["changelog_uri"] = "https://github.com/djezzzl/database_consistency/master/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/djezzzl/n1_loader"
+  spec.metadata["changelog_uri"] = "https://github.com/djezzzl/n1_loader/master/CHANGELOG.md"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features)/}) }
