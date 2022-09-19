@@ -213,6 +213,12 @@ RSpec.describe N1Loader do
                                                                            ])
     end
 
+    it "supports falsey argument values" do
+      expect(object.with_default_argument(anything: 2)).to eq([object, [], 2])                      # default value
+      expect(object.with_default_argument(something: false, anything: 2)).to eq([object, false, 2]) # false
+      expect(object.with_default_argument(something: nil, anything: 2)).to eq([object, nil, 2])     # nil
+    end
+
     it "works with preloading" do
       N1Loader::Preloader.new(objects).preload(:with_arguments)
 

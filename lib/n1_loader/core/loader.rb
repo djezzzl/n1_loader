@@ -23,7 +23,9 @@ module N1Loader
 
         @arguments ||= []
 
-        define_method(name) { args[name] ||= opts[:default]&.call }
+        define_method(name) do
+          args.fetch(name) { opts[:default]&.call }
+        end
 
         @arguments << opts.merge(name: name)
       end
