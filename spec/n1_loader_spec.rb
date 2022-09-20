@@ -213,6 +213,12 @@ RSpec.describe N1Loader do
                                                                            ])
     end
 
+    it "supports falsey argument values" do
+      expect(object.with_default_argument(anything: 2)).to eq([object, [], 2])                      # default value
+      expect(object.with_default_argument(something: false, anything: 2)).to eq([object, false, 2]) # false
+      expect(object.with_default_argument(something: nil, anything: 2)).to eq([object, nil, 2])     # nil
+    end
+
     it "works with preloading" do
       N1Loader::Preloader.new(objects).preload(:with_arguments)
 
@@ -226,7 +232,7 @@ RSpec.describe N1Loader do
     end
 
     it "caches based on arguments" do
-      N1Loader::Preloader.new(objects).preload(:with_arguments)
+      N1Loader::Preloader.new(objects).preload(:with_arguments, :with_default_argument)
 
       expect do
         objects.each { |object| object.with_arguments(something: "something", anything: "anything") }
@@ -242,6 +248,14 @@ RSpec.describe N1Loader do
 
       expect do
         objects.each { |object| object.with_arguments(something: "something", anything: "anything") }
+      end.not_to change(klass, :count)
+
+      expect do
+        objects.each { |object| object.with_default_argument(something: false, anything: nil) }
+      end.to change(klass, :count).by(1)
+
+      expect do
+        objects.each { |object| object.with_default_argument(something: false, anything: nil) }
       end.not_to change(klass, :count)
     end
 
