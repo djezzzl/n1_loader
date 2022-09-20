@@ -232,7 +232,7 @@ RSpec.describe N1Loader do
     end
 
     it "caches based on arguments" do
-      N1Loader::Preloader.new(objects).preload(:with_arguments)
+      N1Loader::Preloader.new(objects).preload(:with_arguments, :with_default_argument)
 
       expect do
         objects.each { |object| object.with_arguments(something: "something", anything: "anything") }
@@ -248,6 +248,14 @@ RSpec.describe N1Loader do
 
       expect do
         objects.each { |object| object.with_arguments(something: "something", anything: "anything") }
+      end.not_to change(klass, :count)
+
+      expect do
+        objects.each { |object| object.with_default_argument(something: false, anything: nil) }
+      end.to change(klass, :count).by(1)
+
+      expect do
+        objects.each { |object| object.with_default_argument(something: false, anything: nil) }
       end.not_to change(klass, :count)
     end
 
