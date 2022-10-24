@@ -9,7 +9,20 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: ['2.7', '3.0', 'head']
+        ruby-version:
+          - '2.7'
+          - '3.0'
+          - 'head'
+        activerecord-gemfile:
+          - 'ar_5_latest'
+          - 'ar_6_latest'
+          - 'ar_7_latest'
+        ar_lazy_preload-gemfile:
+          - 'ar_lazy_preload_0.6.1'
+          - 'ar_lazy_preload_master'
+    env:
+      ACTIVERECORD_GEMFILE: ${{ matrix.activerecord-gemfile }}
+      AR_LAZY_PRELOAD_GEMFILE: ${{ matrix.ar_lazy_preload-gemfile }}
 
     steps:
       - uses: actions/checkout@v3
