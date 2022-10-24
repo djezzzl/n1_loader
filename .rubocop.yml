@@ -2,6 +2,7 @@ AllCops:
   TargetRubyVersion: 2.5
   Exclude:
     - examples/**/*
+    - vendor/bundle/**/*
 
 Style/StringLiterals:
   Enabled: true
