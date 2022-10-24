@@ -1,0 +1,28 @@
+name: RSpec tests
+
+on: [push]
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+    container:
+      image: ruby:2.7
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Gem cache
+        id: cache-bundle
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: bundle-${{ hashFiles('**/Gemfile.lock') }}
+
+      - name: Install bundler install
+        run: gem install bundler
+
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3 --path vendor/bundle
+
+      - name: Run tests
+        run: bundle exec rspec
