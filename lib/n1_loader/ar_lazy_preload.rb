@@ -14,6 +14,8 @@ require_relative "ar_lazy_preload/associated_context_builder"
 require_relative "ar_lazy_preload/loader_collection_patch"
 require_relative "ar_lazy_preload/preloader_patch"
 require_relative "ar_lazy_preload/loader_patch"
+require_relative "ar_lazy_preload/loader"
+require_relative "ar_lazy_preload/context"
 
 N1Loader::Loadable::ClassMethods.prepend(N1Loader::ArLazyPreload::Loadable::ClassMethods)
 N1Loader::Preloader.prepend(N1Loader::ArLazyPreload::PreloaderPatch)

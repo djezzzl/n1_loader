@@ -149,6 +149,17 @@ p User.all.includes(:payments_total).map { |user| user.payments_total(from: from
 - Has [integration](examples/active_record_integration.rb) with [ActiveRecord][5] which makes it brilliant
 - Has [integration](examples/ar_lazy_integration.rb) with [ArLazyPreload][6] which makes it excellent
 
+### Feature killer for [ArLazyPreload][6] integration with isolated loaders
+
+In [version 1.6.0](CHANGELOG.md#160---20221019) isolated loaders were integrated with [ArLazyPreload][6] context.
+This means, it isn't required to inject `N1Loader` into your [ActiveRecord][5] models to avoid N+1 issues out of the box.
+It is especially great as many engineers are trying to avoid extra coupling between their models/services when it's possible.
+And this feature was designed exactly for this without losing an out of a box solution for N+1.
+
+Without further ado, please have a look at the [example](examples/ar_lazy_integration_with_isolated_loader.rb).
+
+_Spoiler:_ as soon as you have your loader defined, it will be as simple as `Loader.for(element)` to get your data efficiently and without N+1.
+
 ## Funding
 
 ### Open Collective Backers

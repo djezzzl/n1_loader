@@ -189,4 +189,63 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
         .and make_database_queries(count: 3)
     end
   end
+
+  describe "isolated loaders" do
+    let(:loader) do
+      Class.new(N1Loader::Loader) do
+        argument :something
+
+        def perform(_companies)
+          Company.perform!
+
+          hash = Entity.where(id: elements.map(&:entity_id)).index_by(&:id)
+          elements.each { |element| fulfill(element, [hash[element.entity_id], something]) }
+        end
+      end
+    end
+
+    it "works with ArLazyPreload context" do
+      companies = Company.preload_associations_lazily.order(:id).to_a
+      entity1 = Entity.first
+      entity2 = Entity.second
+
+      loaded1 = loader.for(companies.first, something: "tmp")
+      loaded2 = loader.for(companies.second, something: "tmp")
+
+      expect(loaded1).to eq([entity1, "tmp"])
+      expect(loaded2).to eq([entity2, "tmp"])
+      expect(loaded1[0].lazy_preload_context)
+        .to be_present
+        .and eq(loaded2[0].lazy_preload_context)
+
+      expect do
+        companies.map do |company|
+          loader.for(company, something: "something")
+        end
+      end
+        .to make_database_queries(matching: /entities/, count: 1)
+        .and make_database_queries(count: 1)
+        .and change(Company, :count).by(1)
+
+      expect do
+        companies.each do |company|
+          loader.for(company, something: "anything")
+        end
+      end
+        .to make_database_queries(matching: /entities/, count: 1)
+        .and make_database_queries(count: 1)
+        .and change(Company, :count).by(1)
+    end
+
+    context "when object does not have ArLazyPreload context" do
+      it "raises an error" do
+        expect do
+          loader.for("string", something: "something")
+        end.to raise_error(N1Loader::Loader::MissingArLazyPreloadContext)
+        expect do
+          loader.for(Company.first, something: "something")
+        end.to raise_error(N1Loader::Loader::MissingArLazyPreloadContext)
+      end
+    end
+  end
 end
