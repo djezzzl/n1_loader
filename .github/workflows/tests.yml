@@ -1,6 +1,7 @@
 name: RSpec tests
 
-on: [push, pull_request]
+on:
+  - pull_request
 
 jobs:
   tests:
@@ -8,13 +9,13 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: ['2.7', '3.0', 'latest']
+        ruby-version: ['2.7', '3.0', 'head']
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Ruby ${{ matrix.ruby-version }}
-        uses: ruby/setup-ruby@359bebbc29cbe6c87da6bc9ea3bc930432750108
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
