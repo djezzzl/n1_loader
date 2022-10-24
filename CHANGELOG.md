@@ -1,4 +1,4 @@
-## [1.6.0] - 2022/10/19
+## [1.6.0] - 2022/10/24
 
 - Add support of ArLazyPreload context for isolated loaders.
 
