@@ -20,6 +20,16 @@ jobs:
         ar_lazy_preload-gemfile:
           - 'ar_lazy_preload_0.6.1'
           - 'ar_lazy_preload_master'
+        exclude:
+          - ruby-version: 'head'
+            activerecord-gemfile: 'ar_5_latest'
+
+          - ruby-version: 'head'
+            activerecord-gemfile: 'ar_5_latest'
+
+          - activerecord-gemfile: 'ar_7_latest'
+            ar_lazy_preload-gemfile: 'ar_lazy_preload_0.6.1'
+
     env:
       ACTIVERECORD_GEMFILE: ${{ matrix.activerecord-gemfile }}
       AR_LAZY_PRELOAD_GEMFILE: ${{ matrix.ar_lazy_preload-gemfile }}
