@@ -1,28 +1,32 @@
 name: RSpec tests
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  rspec:
+  tests:
     runs-on: ubuntu-latest
-    container:
-      image: ruby:2.7
+
+    strategy:
+      matrix:
+        ruby-version: ['2.7', '3.0', 'latest']
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
-      - name: Gem cache
-        id: cache-bundle
-        uses: actions/cache@v1
+      - name: Set up Ruby ${{ matrix.ruby-version }}
+        uses: ruby/setup-ruby@359bebbc29cbe6c87da6bc9ea3bc930432750108
         with:
-          path: vendor/bundle
-          key: bundle-${{ hashFiles('**/Gemfile.lock') }}
-
-      - name: Install bundler install
-        run: gem install bundler
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
 
       - name: Install dependencies
-        run: bundle install --jobs 4 --retry 3 --path vendor/bundle
+        run: bundle install
 
-      - name: Run tests
-        run: bundle exec rspec
+      - name: Run Core tests
+        run: bundle exec rspec spec/n1_loader_spec.rb
+
+      - name: Run ActiveRecord tests
+        run: bundle exec rspec spec/n1_loader_spec.rb spec/activerecord_spec.rb
+
+      - name: Run ArLazyPreload tests
+        run: bundle exec rspec spec/n1_loader_spec.rb spec/activerecord_spec.rb spec/ar_lazy_preload_spec.rb
