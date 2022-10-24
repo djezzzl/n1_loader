@@ -5,10 +5,8 @@ require "n1_loader/ar_lazy_preload"
 require_relative 'context/setup_ar_lazy'
 require_relative 'context/setup_database'
 
-class User < ActiveRecord::Base
-  has_many :payments
-
-  n1_optimized :payments_total do |users|
+class Loader < N1Loader::Loader
+  def perform(users)
     total_per_user = Payment.group(:user_id).where(user: users).sum(:amount).tap { |h| h.default = 0 }
 
     users.each do |user|
@@ -16,6 +14,10 @@ class User < ActiveRecord::Base
       fulfill(user, total)
     end
   end
+end
+
+class User < ActiveRecord::Base
+  has_many :payments
 end
 
 class Payment < ActiveRecord::Base
@@ -26,11 +28,12 @@ end
 
 fill_database
 
-# Has N+1
+# Has N+1 and loads redundant data
 p User.all.map { |user| user.payments.sum(&:amount) }
 
 # Has no N+1 and loads only required data
-p User.preload_associations_lazily.map(&:payments_total)
+p User.preload_associations_lazily.all.map { |user| Loader.for(user) }
+
 # or
 ArLazyPreload.config.auto_preload = true
-User.all.map(&:payments_total)
+p User.all.map { |user| Loader.for(user) }

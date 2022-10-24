@@ -1,3 +1,7 @@
+## [1.6.0] - 2022/10/19
+
+- Add support of ArLazyPreload context for isolated loaders.
+
 ## [1.5.1] - 2022/09/20
 
 - Fix support of falsey value of arguments. Thanks [Aitor Lopez Beltran](https://github.com/aitorlb) for the [contribution](https://github.com/djezzzl/n1_loader/pull/23)!
