@@ -241,10 +241,11 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
       it "raises an error" do
         expect do
           loader.for("string", something: "something")
-        end.to raise_error(N1Loader::Loader::MissingArLazyPreloadContext)
+        end.to raise_error(N1Loader::Loader::UnsupportedArLazyPreload)
         expect do
-          loader.for(Company.first, something: "something")
-        end.to raise_error(N1Loader::Loader::MissingArLazyPreloadContext)
+          loaded = loader.for(Company.first, something: "something")
+          expect(loaded[0].lazy_preload_context).to be_present
+        end.not_to raise_error
       end
     end
   end
