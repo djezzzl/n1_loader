@@ -1,3 +1,7 @@
+## [1.6.1] - 2022/10/29
+
+- Fix ArLazyPreload context setup when using isolated loaders for objects without the context.
+
 ## [1.6.0] - 2022/10/24
 
 - Add support of ArLazyPreload context for isolated loaders.
