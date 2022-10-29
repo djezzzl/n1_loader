@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
-# Raised when a single object without ArLazyPreload context was passed to an isolated loader.
-N1Loader::Loader::MissingArLazyPreloadContext = Class.new(StandardError)
+# Raised when a single object without ArLazyPreload context support was passed to an isolated loader.
+N1Loader::Loader::UnsupportedArLazyPreload = Class.new(StandardError)
 
 # Defines a singleton method method that allows isolated loaders
 # to use ArLazyPreload context without passing sibling records.
 N1Loader::Loader.define_singleton_method(:for) do |element, **args|
-  # It is required to have an ArLazyPreload context defined
-  if !element.respond_to?(:lazy_preload_context) || element.lazy_preload_context.nil?
-    raise N1Loader::Loader::MissingArLazyPreloadContext
+  # It is required to have an ArLazyPreload context supported
+  raise N1Loader::Loader::UnsupportedArLazyPreload unless element.respond_to?(:lazy_preload_context)
+
+  if element.lazy_preload_context.nil?
+    ArLazyPreload::Context.register(
+      records: [element],
+      association_tree: [],
+      auto_preload: true
+    )
   end
 
   # Fetch or initialize loader from ArLazyPreload context
