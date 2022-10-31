@@ -1,7 +1,8 @@
 # N1Loader
 
-[![CircleCI][1]][2]
 [![Gem Version][3]][4]
+![Tests][1]
+![Rubocop][2]
 [![][9]][10]
 
 N1Loader is designed to provide a simple way for avoiding [N+1 issues][7] of any kind. 
@@ -253,8 +254,8 @@ Everyone interacting in the N1Loader project's codebases, issue trackers, chat r
 
 Copyright (c) Evgeniy Demin. See [LICENSE.txt](LICENSE.txt) for further details.
 
-[1]: https://circleci.com/gh/djezzzl/n1_loader/tree/master.svg?style=shield
-[2]: https://circleci.com/gh/djezzzl/n1_loader/tree/master
+[1]: https://github.com/djezzzl/n1_loader/actions/workflows/tests.yml/badge.svg
+[2]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml/badge.svg
 [3]: https://badge.fury.io/rb/n1_loader.svg
 [4]: https://badge.fury.io/rb/n1_loader
 [5]: https://github.com/rails/rails/tree/main/activerecord
