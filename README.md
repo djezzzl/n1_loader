@@ -1,8 +1,8 @@
 # N1Loader
 
 [![Gem Version][3]][4]
-![Tests][1]
-![Rubocop][2]
+[![][11]][12]
+[![][13]][14]
 [![][9]][10]
 
 N1Loader is designed to provide a simple way for avoiding [N+1 issues][7] of any kind. 
@@ -12,7 +12,8 @@ For example, it can help with resolving N+1 for:
 - complex calculations
 - and many more
 
-> [Toptal](https://www.toptal.com#snag-only-shrewd-web-development-experts) is hiring! [Join](https://www.toptal.com#snag-only-shrewd-web-development-experts) as Freelancer or [write me](mailto:lawliet.djez@gmail.com) if you want to join Core team.
+> If the project helps you or your organization, I would be very grateful if you [contribute][15] or [donate][10].  
+> Your support is an incredible motivation and the biggest reward for my hard work.
 
 ___Support:___ ActiveRecord 5, 6, and 7.
 
@@ -254,8 +255,6 @@ Everyone interacting in the N1Loader project's codebases, issue trackers, chat r
 
 Copyright (c) Evgeniy Demin. See [LICENSE.txt](LICENSE.txt) for further details.
 
-[1]: https://github.com/djezzzl/n1_loader/actions/workflows/tests.yml/badge.svg
-[2]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml/badge.svg
 [3]: https://badge.fury.io/rb/n1_loader.svg
 [4]: https://badge.fury.io/rb/n1_loader
 [5]: https://github.com/rails/rails/tree/main/activerecord
@@ -264,3 +263,8 @@ Copyright (c) Evgeniy Demin. See [LICENSE.txt](LICENSE.txt) for further details.
 [8]: https://github.com/djezzzl/n1_loader
 [9]: https://opencollective.com/n1_loader/tiers/badge.svg
 [10]: https://opencollective.com/n1_loader#support
+[11]: https://github.com/djezzzl/n1_loader/actions/workflows/tests.yml/badge.svg?branch=master
+[12]: https://github.com/djezzzl/n1_loader/actions/workflows/tests.yml?query=event%3Aschedule
+[13]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml/badge.svg?branch=master
+[14]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml?query=event%3Aschedule
+[15]: https://github.com/djezzzl/n1_loader#contributing
