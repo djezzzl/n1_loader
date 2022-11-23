@@ -1,3 +1,7 @@
+## [1.6.2] - 2022/11/23
+
+- Add fund metadata
+
 ## [1.6.1] - 2022/10/29
 
 - Fix ArLazyPreload context setup when using isolated loaders for objects without the context.
