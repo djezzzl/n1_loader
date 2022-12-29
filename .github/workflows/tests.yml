@@ -38,6 +38,9 @@ jobs:
           - activerecord-gemfile: 'ar_7_latest'
             ar_lazy_preload-gemfile: 'ar_lazy_preload_0.6.1'
 
+          - activerecord-gemfile: 'ar_5_latest'
+            ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
+
     env:
       ACTIVERECORD_GEMFILE: ${{ matrix.activerecord-gemfile }}
       AR_LAZY_PRELOAD_GEMFILE: ${{ matrix.ar_lazy_preload-gemfile }}
@@ -49,7 +52,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true
 
       - name: Install dependencies
         run: bundle install
