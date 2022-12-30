@@ -110,7 +110,7 @@ module N1Loader
 
       @loaded = {}.compare_by_identity
 
-      if elements.size == 1 && respond_to?(:single)
+      if respond_to?(:single) && elements.size == 1
         fulfill(elements.first, single(elements.first))
       elsif elements.any?
         perform(elements)
