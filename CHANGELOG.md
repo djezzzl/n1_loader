@@ -1,3 +1,7 @@
+## [1.6.3] - 2022/12/30
+
+- Performance optimization: avoid unnecessary calls. Thanks [Nazar Matus](https://github.com/FunkyloverOne) for the [contribution](https://github.com/djezzzl/n1_loader/pull/33).
+
 ## [1.6.2] - 2022/11/23
 
 - Add fund metadata
