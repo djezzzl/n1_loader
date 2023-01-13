@@ -17,6 +17,12 @@ For example, it can help with resolving N+1 for:
 
 ___Support:___ ActiveRecord 5, 6, and 7.
 
+Follow me and stay tuned for the updates:
+- [LinkedIn](https://www.linkedin.com/in/evgeniydemin/)
+- [Medium](https://evgeniydemin.medium.com/)
+- [Twitter](https://twitter.com/EvgeniyDemin/)
+- [GitHub](https://github.com/djezzzl)
+
 ## Killer feature for GraphQL API
 
 N1Loader in combination with [ArLazyPreload][6] is a killer feature for your GraphQL API. 
