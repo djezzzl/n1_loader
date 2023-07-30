@@ -1,5 +1,7 @@
 ## [1.6.7] - 2023/07/30
 
+Extend the flexibility of loading data comparison. Thanks [Nazar Matus](https://github.com/FunkyloverOne) for suggesting it! 
+
 **BREAKING CHANGES:**
 
 Loose comparison of loaded data. Before loaded data was initialized with identity comparator in mind:
