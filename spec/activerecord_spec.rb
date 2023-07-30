@@ -93,6 +93,16 @@ RSpec.describe "N1Loader ActiveRecord integration" do
           elements.each { |element| fulfill(element, [hash[element.entity_id], something]) }
         end
       end
+
+      n1_optimized :with_question_mark? do
+        argument :something
+
+        def perform(elements)
+          Entity.perform!
+
+          elements.each { |element| fulfill(element, [element, something]) }
+        end
+      end
     end)
   end
 
@@ -103,6 +113,16 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     expect { object.data }.not_to change(Entity, :count)
 
     expect(object.data).to eq([object])
+  end
+
+  describe "question mark support" do
+    it "works" do
+      expect do
+        Company.includes(:with_question_mark?).each do |company|
+          expect(company.with_question_mark?(something: "something")).to eq([company, "something"])
+        end
+      end.not_to raise_error
+    end
   end
 
   context "with preloader" do
