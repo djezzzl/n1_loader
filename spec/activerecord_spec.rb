@@ -206,7 +206,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
   end
 
   context "with nested includes" do
-    let(:objects) { Entity.includes(company: :data) }
+    let(:objects) { Entity.includes(company: %i[entity data]) }
 
     before do
       Company.create!(entity: Entity.create!)

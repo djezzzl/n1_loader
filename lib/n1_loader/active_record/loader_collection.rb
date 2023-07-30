@@ -13,3 +13,7 @@ end
 N1Loader::LoaderCollection.define_method :run? do
   true
 end
+
+N1Loader::LoaderCollection.define_method :future_classes do
+  []
+end
