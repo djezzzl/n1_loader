@@ -1,3 +1,42 @@
+## [1.6.7] - 2023/07/30
+
+**BREAKING CHANGES:**
+
+Loose comparison of loaded data. Before loaded data was initialized with identity comparator in mind:
+
+```ruby
+@loaded = {}.compare_by_identity
+```
+
+Now it will be:
+
+```ruby
+@loaded = {}
+```
+
+This might bring unwanted results for cases when strict comparison was wanted. 
+
+On the other hand, it gives more flexibility for many other cases, especially with isolated loader.
+For example, this will work now, when it wasn't working before.
+
+```ruby
+# ActiveRecord object
+object = Entity.first
+
+# Initialize isolated loader
+instance = loader.new([object])
+
+# This was working before because the loaded object is identical to passed object by `#object_id`
+instance.for(object)
+
+# This wasn't working before because the loaded object is not identical to passed one by `#object_id`
+# 
+# But it will be working now, because object == Entity.find(object.id)
+instance.for(Entity.find(object.id))
+```
+
+If you need strict comparison support, please feel free to open the issue or the PR.
+
 ## [1.6.6] - 2023/07/30
 
 - Fix naive check of required arguments. Thanks [Nazar Matus](https://github.com/FunkyloverOne) for the issue!

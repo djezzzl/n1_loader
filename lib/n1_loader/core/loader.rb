@@ -106,7 +106,7 @@ module N1Loader
 
       check_arguments!
 
-      @loaded = {}.compare_by_identity
+      @loaded = {}
 
       if respond_to?(:single) && elements.size == 1
         fulfill(elements.first, single(elements.first))

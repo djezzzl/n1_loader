@@ -106,6 +106,14 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     end)
   end
 
+  let(:loader) do
+    Class.new(N1Loader::Loader) do
+      def perform(elements)
+        elements.each { |element| fulfill(element, [element]) }
+      end
+    end
+  end
+
   let(:object) { Entity.create! }
 
   it "works" do
@@ -113,6 +121,17 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     expect { object.data }.not_to change(Entity, :count)
 
     expect(object.data).to eq([object])
+  end
+
+  describe "loaded comparison" do
+    it "compares by value" do
+      instance = loader.new([object])
+
+      expect(instance.for(object)).to eq([object])
+      expect(instance.for(Entity.find(object.id))).to eq([object])
+
+      expect { instance.for(Entity.create!) }.to raise_error(N1Loader::NotLoaded)
+    end
   end
 
   describe "question mark support" do

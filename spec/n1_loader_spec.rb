@@ -138,6 +138,16 @@ RSpec.describe N1Loader do
     end.not_to raise_error(NoMethodError)
   end
 
+  describe "loaded comparison" do
+    it "compares by value" do
+      instance = loader.new(objects)
+
+      expect(instance.for(objects.first)).to eq([objects.first])
+
+      expect { instance.for(object) }.to raise_error(N1Loader::NotLoaded)
+    end
+  end
+
   context "when fulfill was not used" do
     it "throws error" do
       expect { object.missing_fulfill }
