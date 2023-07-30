@@ -1,4 +1,8 @@
-## [1.6.7] - 2023/07/30
+## [1.7.1] - 2023/07/30
+
+- Fix interface discrepancy for `N1LoaderReflection`. Thanks [Denis Talakevich](https://github.com/senid231) for suggesting it!
+
+## [1.7.0] - 2023/07/30
 
 Extend the flexibility of loading data comparison. Thanks [Nazar Matus](https://github.com/FunkyloverOne) for suggesting it! 
 
