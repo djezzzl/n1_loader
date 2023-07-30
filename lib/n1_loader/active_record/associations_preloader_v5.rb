@@ -4,7 +4,7 @@ module N1Loader
   module ActiveRecord
     module Associations
       module Preloader # :nodoc:
-        N1LoaderReflection = Struct.new(:key, :loader) do
+        N1LoaderReflection = Struct.new(:name, :loader) do
           def options
             {}
           end
@@ -12,7 +12,7 @@ module N1Loader
 
         def preloaders_for_one(association, records, scope)
           grouped_records(association, records).flat_map do |reflection, klasses|
-            next N1Loader::Preloader.new(records).preload(reflection.key) if reflection.is_a?(N1LoaderReflection)
+            next N1Loader::Preloader.new(records).preload(reflection.name) if reflection.is_a?(N1LoaderReflection)
 
             klasses.map do |rhs_klass, rs|
               loader = preloader_for(reflection, rs).new(rhs_klass, rs, reflection, scope)
