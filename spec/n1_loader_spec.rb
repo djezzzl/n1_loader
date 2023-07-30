@@ -193,7 +193,7 @@ RSpec.describe N1Loader do
 
     it "supports optional arguments" do
       expect { object.with_optional_argument }
-        .to raise_error(N1Loader::MissingArgument, "Loader requires 1..2 arguments but 0 were given")
+        .to raise_error(N1Loader::MissingArgument, "Loader requires [:anything] arguments but they are missing")
       expect(object.with_optional_argument(anything: 2)).to eq([object, nil, 2])
       expect(object.with_optional_argument(something: 1, anything: 2)).to eq([object, 1, 2])
       expect { object.with_optional_argument(tmp: 1, anything: 2) }
@@ -202,7 +202,7 @@ RSpec.describe N1Loader do
 
     it "supports default arguments" do
       expect { object.with_default_argument }
-        .to raise_error(N1Loader::MissingArgument, "Loader requires 1..2 arguments but 0 were given")
+        .to raise_error(N1Loader::MissingArgument, "Loader requires [:anything] arguments but they are missing")
       expect(object.with_default_argument(anything: 2)).to eq([object, [], 2])
       expect(object.with_default_argument(something: 1, anything: 2)).to eq([object, 1, 2])
       expect { object.with_default_argument(tmp: 1, anything: 2) }
@@ -220,11 +220,12 @@ RSpec.describe N1Loader do
     it "supports named arguments" do
       expect do
         object.with_custom_arguments_key
-      end.to raise_error(N1Loader::MissingArgument, "Loader requires 2 arguments but 0 were given")
+      end.to raise_error(N1Loader::MissingArgument,
+                         "Loader requires [:something, :anything] arguments but they are missing")
       expect do
         object.with_custom_arguments_key(something: "something")
       end.to raise_error(N1Loader::MissingArgument,
-                         "Loader requires 2 arguments but 1 were given")
+                         "Loader requires [:anything] arguments but they are missing")
 
       expect(object.with_custom_arguments_key(something: "something",
                                               anything: "anything")).to eq([

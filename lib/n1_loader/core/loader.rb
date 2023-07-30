@@ -62,22 +62,20 @@ module N1Loader
 
     attr_reader :elements, :args
 
-    def check_missing_arguments! # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def check_missing_arguments! # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
       return unless (arguments = self.class.arguments)
 
-      min = arguments.count { |argument| !argument[:optional] }
-      max = arguments.count
+      required_arguments = arguments.reject { |argument| argument[:optional] }
+                                    .map { |argument| argument[:name] }
 
-      return if args.size >= min && args.size <= max
+      return if required_arguments.all? { |argument| args.key?(argument) }
 
-      str =
-        if min == max
-          max.to_s
-        else
-          "#{min}..#{max}"
-        end
+      missing_arguments = required_arguments.reject { |argument| args.key?(argument) }
 
-      raise MissingArgument, "Loader requires #{str} arguments but #{args.size} were given"
+      list = missing_arguments.map { |argument| ":#{argument}" }.join(", ")
+
+      raise MissingArgument,
+            "Loader requires [#{list}] arguments but they are missing"
     end
 
     def check_arguments!
