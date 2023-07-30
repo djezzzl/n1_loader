@@ -1,3 +1,7 @@
+## [1.6.6] - 2023/07/30
+
+- Fix naive check of required arguments. Thanks [Nazar Matus](https://github.com/FunkyloverOne) for the issue!
+
 ## [1.6.5] - 2023/07/30
 
 - Fix nested preloading for ActiveRecord 7. Thanks [Igor Gonchar](https://github.com/gigorok) for the issue!
