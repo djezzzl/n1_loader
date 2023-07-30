@@ -1,3 +1,7 @@
+## [1.6.5] - 2023/07/30
+
+- Fix nested preloading for ActiveRecord 7. Thanks [Igor Gonchar](https://github.com/gigorok) for the issue!
+
 ## [1.6.4] - 2023/07/30
 
 - Add support of `n1_optimized` ending with `?` (question mark). Thanks [Ilya Kamenko](https://github.com/Galathius) for the suggestion!
