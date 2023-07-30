@@ -102,6 +102,18 @@ RSpec.describe N1Loader do
           end
         end
       end
+
+      n1_optimized :with_question_mark? do
+        argument :something
+
+        def perform(elements)
+          elements.first.class.perform!
+
+          elements.each do |element|
+            fulfill(element, [element, something])
+          end
+        end
+      end
     end
   end
 
@@ -130,6 +142,13 @@ RSpec.describe N1Loader do
     it "throws error" do
       expect { object.missing_fulfill }
         .to raise_error(N1Loader::NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method")
+    end
+  end
+
+  describe "question mark support" do
+    it "works" do
+      expect { object.with_question_mark?(something: "something") }.not_to raise_error
+      expect(object.with_question_mark?(something: "something")).to eq([object, "something"])
     end
   end
 

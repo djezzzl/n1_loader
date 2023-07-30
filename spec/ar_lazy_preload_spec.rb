@@ -111,12 +111,32 @@ RSpec.describe "N1Loader AR Lazy Preload integration" do
           elements.each { |element| fulfill(element, [hash[element.entity_id], something]) }
         end
       end
+
+      n1_optimized :with_question_mark? do
+        argument :something
+
+        def perform(elements)
+          Entity.perform!
+
+          elements.each { |element| fulfill(element, [element, something]) }
+        end
+      end
     end)
   end
 
   before do
     Company.create!(entity: Entity.create!)
     Company.create!(entity: Entity.create!)
+  end
+
+  describe "question mark support" do
+    it "works" do
+      expect do
+        Company.preload_associations_lazily.each do |company|
+          expect(company.with_question_mark?(something: "something")).to eq([company, "something"])
+        end
+      end.not_to raise_error
+    end
   end
 
   it "works" do

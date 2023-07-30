@@ -9,7 +9,7 @@ module N1Loader
   #     # with inline loader
   #     n1_loader :something do
   #       def perform(elements)
-  #         elements.each { |element| fulfill(element,, element.calculate_something) }
+  #         elements.each { |element| fulfill(element, element.calculate_something) }
   #       end
   #     end
   #
@@ -20,15 +20,21 @@ module N1Loader
   #   # custom loader
   #   class MyLoader < N1Loader::Loader
   #     def perform(elements)
-  #       elements.each { |element| fulfill(element,, element.calculate_something) }
+  #       elements.each { |element| fulfill(element, element.calculate_something) }
   #     end
   #   end
   module Loadable
+    include Name
+
     def n1_loader(name)
+      name = n1_loader_name(name)
+
       send("#{name}_loader")
     end
 
     def n1_loader_set(name, loader_collection)
+      name = n1_loader_name(name)
+
       send("#{name}_loader=", loader_collection)
     end
 
@@ -43,11 +49,17 @@ module N1Loader
     end
 
     module ClassMethods # :nodoc:
+      include Name
+
       def n1_loader(name)
+        name = n1_loader_name(name)
+
         send("#{name}_loader")
       end
 
       def n1_loader_defined?(name)
+        name = n1_loader_name(name)
+
         respond_to?("#{name}_loader")
       end
 
@@ -63,7 +75,7 @@ module N1Loader
             class_eval(&block)
           end
         end
-        loader_name = "#{name}_loader"
+        loader_name = "#{n1_loader_name(name)}_loader"
         loader_variable_name = "@#{loader_name}"
 
         n1_loaders << name
