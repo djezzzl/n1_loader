@@ -24,11 +24,11 @@ module N1Loader
 
         def grouped_records(association, records)
           n1_load_records, records = records.partition do |record|
-            record.class.respond_to?(:n1_loader_defined?) && record.class.n1_loader_defined?(association)
+            record.class.respond_to?(:n1_loaders) && record.class.n1_loaders.key?(association)
           end
 
           hash = n1_load_records.group_by do |record|
-            N1LoaderReflection.new(association, record.class.n1_loader(association))
+            N1LoaderReflection.new(association, record.class.n1_loaders[association])
           end
 
           hash.merge(super)
