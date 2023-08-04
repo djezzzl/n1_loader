@@ -18,9 +18,7 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "https://github.com/djezzzl/n1_loader/master/CHANGELOG.md"
   spec.metadata["funding_uri"] = "https://opencollective.com/n1_loader#support"
 
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features)/}) }
-  end
+  spec.files = Dir["lib/**/*"]
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "activerecord", ">= 5"
