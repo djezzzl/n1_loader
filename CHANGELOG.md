@@ -1,3 +1,7 @@
+## [1.7.3] - 2023/08/04
+
+- Decrease the package size by 60%. 
+
 ## [1.7.2] - 2023/08/04
 
 - Refactor core that ended up with speed boost.
