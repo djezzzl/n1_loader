@@ -1,3 +1,7 @@
+## [1.7.2] - 2023/08/04
+
+- Refactor core that ended up with speed boost.
+
 ## [1.7.1] - 2023/07/30
 
 - Fix interface discrepancy for `N1LoaderReflection`. Thanks [Denis Talakevich](https://github.com/senid231) for suggesting it!
