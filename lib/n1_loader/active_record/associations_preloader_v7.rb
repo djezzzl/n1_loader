@@ -18,11 +18,11 @@ module N1Loader
 
         def grouped_records # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
           n1_load_records, records = source_records.partition do |record|
-            record.class.respond_to?(:n1_loader_defined?) && record.class.n1_loader_defined?(association)
+            record.class.respond_to?(:n1_loaders) && record.class.n1_loaders[association]
           end
 
           h = n1_load_records.group_by do |record|
-            N1LoaderReflection.new(association, record.class.n1_loader(association))
+            N1LoaderReflection.new(association, record.class.n1_loaders[association])
           end
 
           polymorphic_parent = !root? && parent.polymorphic?
