@@ -15,6 +15,12 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       create_table(:companies) do |t|
         t.belongs_to :entity
       end
+      create_table(:employees) do |t|
+        t.belongs_to :company
+      end
+      create_table(:assignments) do |t|
+        t.belongs_to :employee
+      end
     end
 
     stub_const("Entity", Class.new(ActiveRecord::Base) do
@@ -59,6 +65,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       self.table_name = :companies
 
       belongs_to :entity, class_name: "Entity"
+      has_many :employees, class_name: "Employee"
 
       class << self
         def name
@@ -101,6 +108,55 @@ RSpec.describe "N1Loader ActiveRecord integration" do
           Entity.perform!
 
           elements.each { |element| fulfill(element, [element, something]) }
+        end
+      end
+
+      n1_optimized :employee_data do 
+        def perform(elements)
+          Company.perform! 
+          employees_hash = Employee.where(company_id: elements.map(&:id)).group_by(&:company_id)
+          elements.each { |element| fulfill(element, employees_hash[element.id] || []) }
+        end
+      end
+    end)
+
+    stub_const("Employee", Class.new(ActiveRecord::Base) do
+      self.table_name = :employees
+
+      belongs_to :company, class_name: "Company"
+      has_many :assignments, class_name: "Assignment"
+
+      class << self
+        def name
+          "Employee"
+        end
+
+        def perform!
+          @count = count + 1
+        end
+
+        def count
+          @count || 0
+        end
+      end
+    end)
+
+    stub_const("Assignment", Class.new(ActiveRecord::Base) do
+      self.table_name = :assignments
+
+      belongs_to :employee, class_name: "Employee"
+
+      class << self
+        def name
+          "Assignment"
+        end
+
+        def perform!
+          @count = count + 1
+        end
+
+        def count
+          @count || 0
         end
       end
     end)
@@ -225,11 +281,11 @@ RSpec.describe "N1Loader ActiveRecord integration" do
   end
 
   context "with nested includes" do
-    let(:objects) { Entity.includes(company: %i[entity data]) }
+    let(:objects) { Entity.includes(company: %i[entity data] + [{employee_data: :assignments}]) }
 
     before do
-      Company.create!(entity: Entity.create!)
-      Company.create!(entity: Entity.create!)
+      Company.create!(entity: Entity.create!, employees: [Employee.create!(assignments: [Assignment.create!])])
+      Company.create!(entity: Entity.create!, employees: [Employee.create!(assignments: [Assignment.create!])])
     end
 
     it "works" do
@@ -240,8 +296,14 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       end
         .to make_database_queries(matching: /entities/, count: 2)
         .and make_database_queries(matching: /companies/, count: 1)
-        .and make_database_queries(count: 3)
-        .and change(Company, :count).by(1)
+        .and make_database_queries(matching: /employees/, count: 1)
+        .and make_database_queries(matching: /assignments/, count: 1)
+        .and make_database_queries(count: 5)
+        .and change(Company, :count).by(2)
+      objects.each do |object|
+        expect(object.company.employee_data).to eq(object.company.employees)
+        expect(object.company.employee_data.map(&:assignments)).to eq(object.company.employees.map(&:assignments))
+      end
     end
 
     context "with arguments" do
