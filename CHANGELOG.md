@@ -1,3 +1,7 @@
+## [1.7.4] - 2023/12/18
+
+- Fix nested association does not preload properly. Thanks [dannyongtey](https://github.com/dannyongtey) for reporting and fixing the issue!
+
 ## [1.7.3] - 2023/08/04
 
 - Decrease the package size by 60%. 
