@@ -111,9 +111,9 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         end
       end
 
-      n1_optimized :employee_data do 
+      n1_optimized :employee_data do
         def perform(elements)
-          Company.perform! 
+          Company.perform!
           employees_hash = Employee.where(company_id: elements.map(&:id)).group_by(&:company_id)
           elements.each { |element| fulfill(element, employees_hash[element.id] || []) }
         end
@@ -281,7 +281,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
   end
 
   context "with nested includes" do
-    let(:objects) { Entity.includes(company: %i[entity data] + [{employee_data: :assignments}]) }
+    let(:objects) { Entity.includes(company: %i[entity data] + [{ employee_data: :assignments }]) }
 
     before do
       Company.create!(entity: Entity.create!, employees: [Employee.create!(assignments: [Assignment.create!])])
