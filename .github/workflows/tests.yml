@@ -23,6 +23,9 @@ jobs:
           - 'ar_lazy_preload_0.6.1'
           - 'ar_lazy_preload_master'
         exclude:
+          - ruby-version: '2.7'
+            ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
+
           - ruby-version: 'head'
             activerecord-gemfile: 'ar_5_latest'
 
