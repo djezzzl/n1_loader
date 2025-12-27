@@ -7,12 +7,15 @@ module N1Loader
       attr_accessor :context_setup
 
       def loaded
-        return @loaded if @loaded
+        return @loaded if @already_loaded && @already_context
 
         super
 
-        context_setup&.call(preloaded_records)
+        synchronize do
+          context_setup&.call(@loaded.values.flatten) unless @already_context
+        end
 
+        @already_context = true
         @loaded
       end
     end

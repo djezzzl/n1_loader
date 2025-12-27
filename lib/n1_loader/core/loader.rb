@@ -6,6 +6,8 @@ module N1Loader
   # Subclasses must define +perform+ method that accepts single argument
   # and returns hash where key is the element and value is what we want to load.
   class Loader
+    prepend MonitorMixin
+
     class << self
       attr_reader :arguments
 
@@ -105,7 +107,17 @@ module N1Loader
     end
 
     def loaded
-      return @loaded if @loaded
+      return @loaded if @already_loaded
+
+      synchronize do
+        non_thread_safe_loaded unless @already_loaded
+      end
+
+      @loaded
+    end
+
+    def non_thread_safe_loaded
+      return @loaded if @already_loaded
 
       check_arguments!
 
@@ -117,6 +129,7 @@ module N1Loader
         perform(elements)
       end
 
+      @already_loaded = true
       @loaded
     end
   end
