@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-gem "activerecord", "~> 7"
+gem "activerecord", "~> 8"
 gem "benchmark"
 gem "bigdecimal"
-gem "concurrent-ruby", "= 1.3.4"
 gem "sqlite3", "< 2.4.0"

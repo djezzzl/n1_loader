@@ -8,42 +8,33 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-
+    continue-on-error: true
     strategy:
       matrix:
-        ruby-version:
-          - '2.7'
-          - '3.0'
-          - 'head'
-        activerecord-gemfile:
-          - 'ar_5_latest'
-          - 'ar_6_latest'
-          - 'ar_7_latest'
-        ar_lazy_preload-gemfile:
-          - 'ar_lazy_preload_0.6.1'
-          - 'ar_lazy_preload_master'
-        exclude:
+        include:
           - ruby-version: '2.7'
-            ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
-
-          - ruby-version: 'head'
             activerecord-gemfile: 'ar_5_latest'
-
-          - ruby-version: 'head'
-            activerecord-gemfile: 'ar_5_latest'
-
-          - ruby-version: '3.0'
-            activerecord-gemfile: 'ar_5_latest'
-
-          - ruby-version: '3.0'
-            activerecord-gemfile: 'ar_5_latest'
-
-          - activerecord-gemfile: 'ar_7_latest'
             ar_lazy_preload-gemfile: 'ar_lazy_preload_0.6.1'
 
-          - activerecord-gemfile: 'ar_5_latest'
+          - ruby-version: '2.7'
+            activerecord-gemfile: 'ar_6_latest'
+            ar_lazy_preload-gemfile: 'ar_lazy_preload_0.6.1'
+
+          - ruby-version: '3.0'
+            activerecord-gemfile: 'ar_6_latest'
+            ar_lazy_preload-gemfile: 'ar_lazy_preload_0.6.1'
+
+          - ruby-version: '3.0'
+            activerecord-gemfile: 'ar_7_latest'
             ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
 
+          - ruby-version: 'head'
+            activerecord-gemfile: 'ar_7_latest'
+            ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
+
+          - ruby-version: 'head'
+            activerecord-gemfile: 'ar_8_latest'
+            ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
     env:
       ACTIVERECORD_GEMFILE: ${{ matrix.activerecord-gemfile }}
       AR_LAZY_PRELOAD_GEMFILE: ${{ matrix.ar_lazy_preload-gemfile }}

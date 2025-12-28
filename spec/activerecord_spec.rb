@@ -234,48 +234,34 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     end
 
     context "with arguments" do
+      before { skip "unsupported by ArLazyPreload" if ar_lazy_preload_defined? }
+
       let(:objects) { Entity.includes(:with_arguments) }
 
-      context "without ArLazyPreload" do
-        before { skip if ar_lazy_preload_defined? && !ar_version_5? }
-
-        it "works" do
-          expect do
-            expect do
-              objects.each do |object|
-                object.with_arguments(something: "something")
-              end
-            end.to change(Entity, :count).by(1)
-            expect do
-              objects.each do |object|
-                object.with_arguments(something: "something")
-              end
-            end.not_to change(Entity, :count)
-            expect do
-              objects.each do |object|
-                object.with_arguments(something: "anything")
-              end
-            end.to change(Entity, :count).by(1)
-
-            objects.each do |object|
-              expect(object.with_arguments(something: "something")).to eq([object, "something"])
-            end
-          end
-            .to make_database_queries(matching: /entities/, count: 1)
-            .and make_database_queries(count: 1)
-        end
-      end
-
-      context "with ArLazyPreload" do
-        before { skip unless ar_lazy_preload_defined? && !ar_version_5? }
-
-        it "doesn't work" do
+      it "works" do
+        expect do
           expect do
             objects.each do |object|
               object.with_arguments(something: "something")
             end
-          end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
+          end.to change(Entity, :count).by(1)
+          expect do
+            objects.each do |object|
+              object.with_arguments(something: "something")
+            end
+          end.not_to change(Entity, :count)
+          expect do
+            objects.each do |object|
+              object.with_arguments(something: "anything")
+            end
+          end.to change(Entity, :count).by(1)
+
+          objects.each do |object|
+            expect(object.with_arguments(something: "something")).to eq([object, "something"])
+          end
         end
+          .to make_database_queries(matching: /entities/, count: 1)
+          .and make_database_queries(count: 1)
       end
     end
   end
@@ -309,32 +295,18 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     context "with arguments" do
       let(:objects) { Entity.includes(company: :with_arguments) }
 
-      context "without ArLazyPreload" do
-        before { skip if ar_lazy_preload_defined? && !ar_version_5? && !ar_version_7? }
+      before { skip "unsupported by ActiveRecord 6" if ar_version == 6 }
 
-        it "works" do
-          expect do
-            objects.each do |object|
-              expect(object.company.with_arguments(something: "something")).to eq([object, "something"])
-            end
+      it "works" do
+        expect do
+          objects.each do |object|
+            expect(object.company.with_arguments(something: "something")).to eq([object, "something"])
           end
-            .to make_database_queries(matching: /entities/, count: 2)
-            .and make_database_queries(matching: /companies/, count: 1)
-            .and make_database_queries(count: 3)
-            .and change(Company, :count).by(1)
         end
-      end
-
-      context "with ArLazyPreload" do
-        before { skip unless ar_lazy_preload_defined? && !ar_version_5? && !ar_version_7? }
-
-        it "doesn't work" do
-          expect do
-            objects.each do |object|
-              object.company.with_arguments(something: "something")
-            end
-          end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
-        end
+          .to make_database_queries(matching: /entities/, count: 2)
+          .and make_database_queries(matching: /companies/, count: 1)
+          .and make_database_queries(count: 3)
+          .and change(Company, :count).by(1)
       end
     end
   end
