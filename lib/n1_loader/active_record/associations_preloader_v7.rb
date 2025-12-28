@@ -8,6 +8,14 @@ module N1Loader
           def options
             {}
           end
+
+          def deprecated?
+            false
+          end
+
+          def through_reflection?
+            false
+          end
         end
 
         def preloaders_for_reflection(reflection, records)
