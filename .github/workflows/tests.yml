@@ -36,10 +36,6 @@ jobs:
             activerecord-gemfile: 'ar_7_latest'
             ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
 
-          - ruby-version: '3.0'
-            activerecord-gemfile: 'ar_8_latest'
-            ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
-
           - ruby-version: 'head'
             activerecord-gemfile: 'ar_7_latest'
             ar_lazy_preload-gemfile: 'ar_lazy_preload_master'
