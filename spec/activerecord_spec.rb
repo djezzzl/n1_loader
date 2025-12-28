@@ -323,7 +323,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
               .and change(Company, :count).by(1)
           end
         end
-      elsif ar_version >= 7
+      else
         it "works" do
           expect do
             objects.each do |object|
@@ -334,14 +334,6 @@ RSpec.describe "N1Loader ActiveRecord integration" do
             .and make_database_queries(matching: /companies/, count: 1)
             .and make_database_queries(count: 3)
             .and change(Company, :count).by(1)
-        end
-      else
-        it "doesn't work" do
-          expect do
-            objects.each do |object|
-              object.company.with_arguments(something: "something")
-            end
-          end.to raise_error(N1Loader::ActiveRecord::InvalidPreloading)
         end
       end
     end
