@@ -26,7 +26,7 @@ ActiveSupport.on_load(:active_record) do
     require_relative "active_record/associations_preloader_v5"
     ActiveRecord::Associations::Preloader.prepend(N1Loader::ActiveRecord::Associations::Preloader)
   else
-    require_relative "active_record/associations_preloader_v7"
+    require_relative "active_record/associations_preloader"
     ActiveRecord::Associations::Preloader::Branch.prepend(N1Loader::ActiveRecord::Associations::Preloader)
   end
 
