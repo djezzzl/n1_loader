@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4"
   spec.add_development_dependency "rubocop", "~> 1.7"
-  spec.add_development_dependency "sqlite3", "~> 1.3"
+  spec.add_development_dependency "sqlite3", ">= 1.3"
 end
