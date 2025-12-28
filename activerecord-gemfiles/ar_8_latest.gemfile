@@ -1,0 +1,5 @@
+# frozen_string_literal: true
+
+gem "activerecord", "~> 8"
+gem "benchmark"
+gem "bigdecimal"
