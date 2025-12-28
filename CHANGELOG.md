@@ -1,3 +1,7 @@
+## [2.0.1] - 2025/12/28
+
+- Add support of Rails 8.
+
 ## [2.0.0] - 2025/12/28
 
 - Make loader thread-safe. 
