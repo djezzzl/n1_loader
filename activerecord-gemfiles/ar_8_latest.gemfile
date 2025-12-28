@@ -3,3 +3,4 @@
 gem "activerecord", "~> 8"
 gem "benchmark"
 gem "bigdecimal"
+gem "sqlite3", "~> 2.3.0"
