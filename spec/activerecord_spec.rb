@@ -295,6 +295,8 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     context "with arguments" do
       let(:objects) { Entity.includes(company: :with_arguments) }
 
+      before { skip "unsupported by ActiveRecord 6" if ar_version == 6 }
+
       it "works" do
         expect do
           objects.each do |object|
