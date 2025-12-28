@@ -19,7 +19,8 @@ RSpec.configure do |config|
   end
 
   def ar_lazy_preload_defined?
-    defined?(ArLazyPreload)
+    p "HUY"
+    p defined?(ArLazyPreload)
   end
 
   def ar_version

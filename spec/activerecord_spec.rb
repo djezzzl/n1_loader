@@ -234,34 +234,34 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     end
 
     context "with arguments" do
+      before { skip "unsupported by ArLazyPreload" if ar_lazy_preload_defined? }
+
       let(:objects) { Entity.includes(:with_arguments) }
 
-      context "without ArLazyPreload" do
-        it "works" do
+      it "works" do
+        expect do
           expect do
-            expect do
-              objects.each do |object|
-                object.with_arguments(something: "something")
-              end
-            end.to change(Entity, :count).by(1)
-            expect do
-              objects.each do |object|
-                object.with_arguments(something: "something")
-              end
-            end.not_to change(Entity, :count)
-            expect do
-              objects.each do |object|
-                object.with_arguments(something: "anything")
-              end
-            end.to change(Entity, :count).by(1)
-
             objects.each do |object|
-              expect(object.with_arguments(something: "something")).to eq([object, "something"])
+              object.with_arguments(something: "something")
             end
+          end.to change(Entity, :count).by(1)
+          expect do
+            objects.each do |object|
+              object.with_arguments(something: "something")
+            end
+          end.not_to change(Entity, :count)
+          expect do
+            objects.each do |object|
+              object.with_arguments(something: "anything")
+            end
+          end.to change(Entity, :count).by(1)
+
+          objects.each do |object|
+            expect(object.with_arguments(something: "something")).to eq([object, "something"])
           end
-            .to make_database_queries(matching: /entities/, count: 1)
-            .and make_database_queries(count: 1)
         end
+          .to make_database_queries(matching: /entities/, count: 1)
+          .and make_database_queries(count: 1)
       end
     end
   end
