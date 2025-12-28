@@ -31,6 +31,13 @@ RSpec.describe N1Loader do
         elements.each { |element| fulfill(element, [element]) }
       end
 
+      n1_optimized :sleepy do |elements|
+        sleep(0.5)
+
+        elements.first.class.perform!
+        elements.each { |element| fulfill(element, [element]) }
+      end
+
       n1_optimized :custom, custom_loader
 
       n1_optimized :single_optimized do
@@ -136,6 +143,42 @@ RSpec.describe N1Loader do
     expect do
       N1Loader::Preloader.new([object, 123]).preload(:with_arguments)
     end.not_to raise_error(NoMethodError)
+  end
+
+  describe "thread-safety" do
+    it "is thread-safe" do
+      N1Loader::Preloader.new(objects).preload(:sleepy)
+
+      threads = []
+
+      10.times do
+        threads << Thread.new do
+          objects.each do |obj|
+            expect(obj.sleepy).to eq([obj])
+          end
+        end
+      end
+      threads.each(&:join)
+
+      expect(klass.count).to eq(1)
+    end
+  end
+
+  describe "error handling" do
+    it "raises the same error on the subsequent calls" do
+      faulty_klass = Class.new do
+        include N1Loader::Loadable
+
+        n1_optimized :faulty do |_|
+          raise StandardError, "Something went wrong"
+        end
+      end
+
+      faulty_object = faulty_klass.new
+
+      expect { faulty_object.faulty }.to raise_error(StandardError, "Something went wrong")
+      expect { faulty_object.faulty }.to raise_error(StandardError, "Something went wrong")
+    end
   end
 
   describe "loaded comparison" do

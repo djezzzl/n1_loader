@@ -1,3 +1,6 @@
 # frozen_string_literal: true
 
 gem "activerecord", "~> 6"
+gem "benchmark"
+gem "bigdecimal"
+gem "concurrent-ruby", "= 1.3.4"

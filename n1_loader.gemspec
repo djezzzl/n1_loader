@@ -21,6 +21,8 @@ Gem::Specification.new do |spec|
   spec.files = Dir["lib/**/*"]
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "mutex_m"
+
   spec.add_development_dependency "activerecord", ">= 5"
   spec.add_development_dependency "ar_lazy_preload", ">= 0.6"
   spec.add_development_dependency "db-query-matchers", "~> 0.11"
