@@ -22,11 +22,7 @@ RSpec.configure do |config|
     defined?(ArLazyPreload)
   end
 
-  def ar_version_5?
-    ActiveRecord::VERSION::MAJOR == 5
-  end
-
-  def ar_version_7?
-    ActiveRecord::VERSION::MAJOR == 7
+  def ar_version
+    ActiveRecord::VERSION::MAJOR
   end
 end

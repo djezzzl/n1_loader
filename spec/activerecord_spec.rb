@@ -237,7 +237,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       let(:objects) { Entity.includes(:with_arguments) }
 
       context "without ArLazyPreload" do
-        before { skip if ar_lazy_preload_defined? && !ar_version_5? }
+        before { skip if ar_lazy_preload_defined? }
 
         it "works" do
           expect do
@@ -267,7 +267,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       end
 
       context "with ArLazyPreload" do
-        before { skip unless ar_lazy_preload_defined? && !ar_version_5? }
+        before { skip unless ar_lazy_preload_defined? }
 
         it "doesn't work" do
           expect do
@@ -309,9 +309,21 @@ RSpec.describe "N1Loader ActiveRecord integration" do
     context "with arguments" do
       let(:objects) { Entity.includes(company: :with_arguments) }
 
-      context "without ArLazyPreload" do
-        before { skip if ar_lazy_preload_defined? && !ar_version_5? && !ar_version_7? }
-
+      if ar_lazy_preload_defined?
+        context "without ArLazyPreload" do
+          it "works" do
+            expect do
+              objects.each do |object|
+                expect(object.company.with_arguments(something: "something")).to eq([object, "something"])
+              end
+            end
+              .to make_database_queries(matching: /entities/, count: 2)
+              .and make_database_queries(matching: /companies/, count: 1)
+              .and make_database_queries(count: 3)
+              .and change(Company, :count).by(1)
+          end
+        end
+      elsif ar_version >= 7
         it "works" do
           expect do
             objects.each do |object|
@@ -323,11 +335,7 @@ RSpec.describe "N1Loader ActiveRecord integration" do
             .and make_database_queries(count: 3)
             .and change(Company, :count).by(1)
         end
-      end
-
-      context "with ArLazyPreload" do
-        before { skip unless ar_lazy_preload_defined? && !ar_version_5? && !ar_version_7? }
-
+      else
         it "doesn't work" do
           expect do
             objects.each do |object|
