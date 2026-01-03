@@ -15,7 +15,7 @@ For example, it can help with resolving N+1 for:
 > If the project helps you or your organization, I would be very grateful if you [contribute][15] or [donate][10].  
 > Your support is an incredible motivation and the biggest reward for my hard work.
 
-___Support:___ ActiveRecord 5, 6, and 7.
+___Support:___ ActiveRecord 5, 6, 7, and 8.
 
 Follow me and stay tuned for the updates:
 - [LinkedIn](https://www.linkedin.com/in/evgeniydemin/)
