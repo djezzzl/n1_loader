@@ -437,4 +437,33 @@ RSpec.describe N1Loader do
       expect { objects.map(&:inline) }.not_to change(klass, :count)
     end
   end
+
+  describe "n1_bind_to" do
+    it "returns correct data for each bound object" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect(objects.first.inline).to eq([objects.first])
+      expect(objects.last.inline).to eq([objects.last])
+    end
+
+    it "loads all bound objects in a single batch" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect { objects.map(&:inline) }.to change(klass, :count).by(1)
+    end
+
+    it "caches the result after the first load" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect { objects.map(&:inline) }.to change(klass, :count).by(1)
+      expect { objects.map(&:inline) }.not_to change(klass, :count)
+    end
+
+    it "lazily loads when the first object is accessed" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect { objects.first.inline }.to change(klass, :count).by(1)
+      expect { objects.last.inline }.not_to change(klass, :count)
+    end
+  end
 end
