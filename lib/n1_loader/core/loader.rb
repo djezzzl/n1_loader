@@ -126,6 +126,7 @@ module N1Loader
       if respond_to?(:single) && elements.size == 1
         fulfill(elements.first, single(elements.first))
       elsif elements.any?
+        elements.each { |el| el.n1_bind_to(elements) if el.respond_to?(:n1_bind_to) }
         perform(elements)
       end
 
