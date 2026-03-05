@@ -122,16 +122,22 @@ module N1Loader
       check_arguments!
 
       @loaded = {}
+      perform_loading
+      @already_loaded = true
+      @loaded
+    end
 
+    def perform_loading
       if respond_to?(:single) && elements.size == 1
         fulfill(elements.first, single(elements.first))
       elsif elements.any?
-        elements.each { |el| el.n1_bind_to(elements) if el.respond_to?(:n1_bind_to) }
+        bind_elements_context
         perform(elements)
       end
+    end
 
-      @already_loaded = true
-      @loaded
+    def bind_elements_context
+      elements.each { |el| el.n1_bind_to(elements) if el.respond_to?(:n1_bind_to) }
     end
   end
 end
