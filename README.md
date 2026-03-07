@@ -55,6 +55,17 @@ Are you not working with [ActiveRecord][5]? N1Loader is ready to be used as stan
 gem 'n1_loader'
 ```
 
+Want lazy, N+1-free loading without explicit preloading? Use `n1_bind_to` to share context across a collection of plain Ruby objects. ([full snippet](examples/n1_bind_to.rb))
+
+```ruby
+users = [User.new, User.new, User.new]
+
+# Bind users to the collection — lazy access is now automatically batched
+users.each { |user| user.n1_bind_to(users) }
+
+users.map(&:optimized_call) # loads all in a single batch, no N+1
+```
+
 ## How to use it?
 
 N1Loader provides DSL that allows you to define N+1 ready loaders that can 
@@ -156,6 +167,7 @@ p User.all.includes(:payments_total).map { |user| user.payments_total(from: from
 - Loader support [arguments](examples/arguments_support.rb)
 - Has [integration](examples/active_record_integration.rb) with [ActiveRecord][5] which makes it brilliant
 - Has [integration](examples/ar_lazy_integration.rb) with [ArLazyPreload][6] which makes it excellent
+- Supports [context sharing](examples/n1_bind_to.rb) for plain Ruby objects without ActiveRecord
 
 ### Feature killer for [ArLazyPreload][6] integration with isolated loaders
 
@@ -167,6 +179,16 @@ And this feature was designed exactly for this without losing an out of a box so
 Without further ado, please have a look at the [example](examples/ar_lazy_integration_with_isolated_loader.rb).
 
 _Spoiler:_ as soon as you have your loader defined, it will be as simple as `Loader.for(element)` to get your data efficiently and without N+1.
+
+### Context sharing for plain Ruby objects with `n1_bind_to`
+
+In [version 2.1.0](CHANGELOG.md#210---20260307) context sharing was added for plain Ruby objects.
+This allows you to get lazy, N+1-free loading without [ActiveRecord][5] or explicit preloading.
+
+By calling `n1_bind_to(collection)` on each element, you bind them to their shared collection.
+When any loader is triggered on a bound element, it automatically batch-loads for the entire collection — and nested loaders propagate the context automatically as well.
+
+Have a look at the [example](examples/n1_bind_to.rb) to see how simple it is.
 
 ## Funding
 
