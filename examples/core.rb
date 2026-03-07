@@ -32,8 +32,16 @@ count_before = Service.count
 p users.map(&:unoptimized_call)
 p "Has N+1 #{Service.count == count_before + users.count}"
 
-# Has no N+1
+# Has no N+1 via explicit preloading
 count_before = Service.count
 N1Loader::Preloader.new(users).preload(:optimized_call)
+p users.map(&:optimized_call)
+p "Has no N+1: #{Service.count == count_before + 1}"
+
+users = [User.new, User.new]
+
+# Has no N+1 via n1_bind_to context sharing (see examples/n1_bind_to.rb)
+users.each { |user| user.n1_bind_to(users) }
+count_before = Service.count
 p users.map(&:optimized_call)
 p "Has no N+1: #{Service.count == count_before + 1}"
