@@ -45,6 +45,9 @@ jobs:
           sed -i.bak -e "s|^### \[Unreleased\]|### [$VERSION] - $DATE|" CHANGELOG.md
           rm -f CHANGELOG.md.bak
 
+      - name: Git status
+        run: git status
+
       - name: Commit version bump
         run: |
           git config user.name "Evgenii Demin"
