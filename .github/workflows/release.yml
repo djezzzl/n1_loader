@@ -35,14 +35,14 @@ jobs:
 
       - name: Bump version
         run: |
-          sed -i "s/VERSION = '.*'/VERSION = '${{ github.event.inputs.version }}'/" lib/n1_loader/version.rb
+          sed -i 's/VERSION = ".*"/VERSION = "${{ github.event.inputs.version }}"/' lib/n1_loader/version.rb
 
       - name: Update changelog
         env:
           VERSION: ${{ github.event.inputs.version }}
         run: |
           DATE=$(date +%Y/%m/%d)
-          sed -i.bak -e "s|^### \[Unreleased\]|### [$VERSION] - $DATE|" CHANGELOG.md
+          sed -i.bak -e "s|^## \[Unreleased\]|## [$VERSION] - $DATE|" CHANGELOG.md
           rm -f CHANGELOG.md.bak
 
       - name: Git status
