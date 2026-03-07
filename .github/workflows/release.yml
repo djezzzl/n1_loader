@@ -35,7 +35,7 @@ jobs:
 
       - name: Bump version
         run: |
-          sed -i "s/VERSION = '.*'/VERSION = '${{ github.event.inputs.version }}'/" lib/database_consistency/version.rb
+          sed -i "s/VERSION = '.*'/VERSION = '${{ github.event.inputs.version }}'/" lib/n1_loader/version.rb
 
       - name: Update changelog
         env:
