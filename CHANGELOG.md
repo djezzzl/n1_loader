@@ -1,3 +1,7 @@
+## [Unreleased]
+
+- Add `n1_bind_to` to support context sharing for plain Ruby objects without ActiveRecord, enabling N+1-free batch loading. Nested loading through N1Loader automatically propagates the shared context. Thanks [Pawel Pacana](https://github.com/paneq) for the feature request!
+
 ## [2.0.1] - 2025/12/28
 
 - Add support of Rails 8.

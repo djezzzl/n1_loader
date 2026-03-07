@@ -32,8 +32,16 @@ module N1Loader
       n1_loaders[name]
     end
 
+    def n1_bind_to(collection)
+      @n1_binding = collection
+    end
+
     def n1_loader_reload(name)
-      n1_loaders[name] = LoaderCollection.new(self.class.n1_loaders[name], [self])
+      elements = @n1_binding || [self]
+      collection = LoaderCollection.new(self.class.n1_loaders[name], elements)
+
+      @n1_binding&.each { |el| el.n1_loaders[name] = collection if el.respond_to?(:n1_loaders) }
+      n1_loaders[name] = collection
     end
 
     def n1_clear_cache

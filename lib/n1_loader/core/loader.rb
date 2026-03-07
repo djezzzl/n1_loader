@@ -116,7 +116,7 @@ module N1Loader
       @loaded
     end
 
-    def non_thread_safe_loaded
+    def non_thread_safe_loaded # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       return @loaded if @already_loaded
 
       check_arguments!
@@ -126,6 +126,7 @@ module N1Loader
       if respond_to?(:single) && elements.size == 1
         fulfill(elements.first, single(elements.first))
       elsif elements.any?
+        elements.each { |el| el.n1_bind_to(elements) if el.respond_to?(:n1_bind_to) }
         perform(elements)
       end
 

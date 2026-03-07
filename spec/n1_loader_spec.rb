@@ -437,4 +437,95 @@ RSpec.describe N1Loader do
       expect { objects.map(&:inline) }.not_to change(klass, :count)
     end
   end
+
+  describe "n1_bind_to" do
+    it "returns correct data for each bound object" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect(objects.first.inline).to eq([objects.first])
+      expect(objects.last.inline).to eq([objects.last])
+    end
+
+    it "loads all bound objects in a single batch" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect { objects.map(&:inline) }.to change(klass, :count).by(1)
+    end
+
+    it "caches the result after the first load" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect { objects.map(&:inline) }.to change(klass, :count).by(1)
+      expect { objects.map(&:inline) }.not_to change(klass, :count)
+    end
+
+    it "lazily loads when the first object is accessed" do
+      objects.each { |obj| obj.n1_bind_to(objects) }
+
+      expect { objects.first.inline }.to change(klass, :count).by(1)
+      expect { objects.last.inline }.not_to change(klass, :count)
+    end
+  end
+
+  describe "automatic context binding" do
+    let(:nested_klass) do
+      Class.new do
+        include N1Loader::Loadable
+
+        class << self
+          def perform!(loader)
+            @counts ||= {}
+            @counts[loader] = (@counts[loader] || 0) + 1
+          end
+
+          def count(loader)
+            @counts&.fetch(loader, 0) || 0
+          end
+        end
+
+        n1_optimized :first_loader do |elements|
+          elements.first.class.perform!(:first_loader)
+          elements.each { |el| fulfill(el, el) }
+        end
+
+        n1_optimized :second_loader do |elements|
+          elements.first.class.perform!(:second_loader)
+          elements.each { |el| fulfill(el, el) }
+        end
+      end
+    end
+
+    let(:nested_objects) { [nested_klass.new, nested_klass.new] }
+
+    it "automatically sets shared context when loaded through N1Loader" do
+      N1Loader::Preloader.new(nested_objects).preload(:first_loader)
+
+      # Accessing first_loader triggers perform([obj1, obj2]),
+      # which automatically calls n1_bind_to on both objects
+      nested_objects.first.first_loader
+
+      # Both objects are now auto-bound; second_loader should batch in one perform call
+      expect { nested_objects.map(&:second_loader) }.to change { nested_klass.count(:second_loader) }.by(1)
+    end
+
+    it "auto-binds so second access on sibling does not trigger another load" do
+      N1Loader::Preloader.new(nested_objects).preload(:first_loader)
+
+      nested_objects.first.first_loader
+
+      nested_objects.first.second_loader
+      expect { nested_objects.last.second_loader }.not_to change { nested_klass.count(:second_loader) } # rubocop:disable Lint/AmbiguousBlockAssociation
+    end
+
+    it "auto-binds single element to a collection containing only itself" do
+      single = nested_klass.new
+      N1Loader::Preloader.new([single]).preload(:first_loader)
+
+      single.first_loader
+
+      # Accessing second_loader on the single element should still work correctly
+      expect { single.second_loader }.to change { nested_klass.count(:second_loader) }.by(1)
+      expect { single.second_loader }.not_to change { nested_klass.count(:second_loader) } # rubocop:disable Lint/AmbiguousBlockAssociation
+    end
+  end
 end
