@@ -514,7 +514,7 @@ RSpec.describe N1Loader do
       nested_objects.first.first_loader
 
       nested_objects.first.second_loader
-      expect { nested_objects.last.second_loader }.not_to(change { nested_klass.count(:second_loader) })
+      expect { nested_objects.last.second_loader }.not_to change { nested_klass.count(:second_loader) } # rubocop:disable Lint/AmbiguousBlockAssociation
     end
 
     it "auto-binds single element to a collection containing only itself" do
@@ -525,7 +525,7 @@ RSpec.describe N1Loader do
 
       # Accessing second_loader on the single element should still work correctly
       expect { single.second_loader }.to change { nested_klass.count(:second_loader) }.by(1)
-      expect { single.second_loader }.not_to(change { nested_klass.count(:second_loader) })
+      expect { single.second_loader }.not_to change { nested_klass.count(:second_loader) } # rubocop:disable Lint/AmbiguousBlockAssociation
     end
   end
 end
