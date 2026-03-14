@@ -50,9 +50,13 @@ module N1Loader
       if loaded.empty? && elements.any?
         raise NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method"
       end
-      raise NotLoaded, "The data was not preloaded for the given element" unless loaded.key?(element)
 
-      loaded[element]
+      return loaded[element] if loaded.key?(element)
+
+      identity_key = loaded.keys.find { |key| key.equal?(element) }
+      return loaded[identity_key] if identity_key
+
+      raise NotLoaded, "The data was not preloaded for the given element"
     end
 
     def cache_key
