@@ -192,17 +192,7 @@ RSpec.describe N1Loader do
     end
 
     it "falls back to equality comparison when no identity match" do
-      equal_klass = Class.new do
-        attr_reader :id
-
-        def initialize(id)
-          @id = id
-        end
-
-        def ==(other)
-          other.is_a?(self.class) && id == other.id
-        end
-      end
+      equal_klass = Struct.new(:id)
 
       original = equal_klass.new(1)
       equal_copy = equal_klass.new(1)

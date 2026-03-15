@@ -47,15 +47,14 @@ module N1Loader
     end
 
     def for(element)
-      if loaded.empty? && elements.any?
+      ensure_loaded
+
+      if @loaded_by_identity.empty? && elements.any?
         raise NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method"
       end
 
-      identity_key = loaded.keys.find { |key| key.equal?(element) }
-      return loaded[identity_key] if identity_key
-
-      equality_key = loaded.keys.find { |key| key == element }
-      return loaded[equality_key] if equality_key
+      return @loaded_by_identity[element] if @loaded_by_identity.key?(element)
+      return @loaded_by_value[element] if @loaded_by_value.key?(element)
 
       raise NotLoaded, "The data was not preloaded for the given element"
     end
@@ -108,25 +107,28 @@ module N1Loader
     end
 
     def fulfill(element, value)
-      @loaded[element] = value
+      @loaded_by_identity[element] = value
+      @loaded_by_value[element] = value
+    end
+
+    def ensure_loaded
+      return if @already_loaded
+
+      synchronize { non_thread_safe_loaded unless @already_loaded }
     end
 
     def loaded
-      return @loaded if @already_loaded
-
-      synchronize do
-        non_thread_safe_loaded unless @already_loaded
-      end
-
-      @loaded
+      ensure_loaded
+      @loaded_by_identity
     end
 
     def non_thread_safe_loaded # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      return @loaded if @already_loaded
+      return if @already_loaded
 
       check_arguments!
 
-      @loaded = {}
+      @loaded_by_identity = {}.compare_by_identity
+      @loaded_by_value = {}
 
       if respond_to?(:single) && elements.size == 1
         fulfill(elements.first, single(elements.first))
@@ -136,7 +138,6 @@ module N1Loader
       end
 
       @already_loaded = true
-      @loaded
     end
   end
 end
