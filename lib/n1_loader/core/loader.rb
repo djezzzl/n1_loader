@@ -47,13 +47,13 @@ module N1Loader
     end
 
     def for(element)
-      ensure_loaded
+      identity_loaded = loaded
 
-      if @loaded_by_identity.empty? && elements.any?
+      if identity_loaded.empty? && elements.any?
         raise NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method"
       end
 
-      return @loaded_by_identity[element] if @loaded_by_identity.key?(element)
+      return identity_loaded[element] if identity_loaded.key?(element)
       return @loaded_by_value[element] if @loaded_by_value.key?(element)
 
       raise NotLoaded, "The data was not preloaded for the given element"
