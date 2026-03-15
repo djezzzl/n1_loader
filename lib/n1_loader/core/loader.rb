@@ -51,10 +51,11 @@ module N1Loader
         raise NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method"
       end
 
-      return loaded[element] if loaded.key?(element)
-
       identity_key = loaded.keys.find { |key| key.equal?(element) }
       return loaded[identity_key] if identity_key
+
+      equality_key = loaded.keys.find { |key| key == element }
+      return loaded[equality_key] if equality_key
 
       raise NotLoaded, "The data was not preloaded for the given element"
     end
