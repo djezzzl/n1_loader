@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.2.0] - 2026/03/16
 
 - Support both identity and equality comparison in `Loader#for`. Identity lookup (via `object_id`) is tried first, with equality lookup as a fallback. Thanks [Alfonso Uceda](https://github.com/AlfonsoUceda) for reporting the issue!
 - Clear binding when `n1_clear_cache` is called, so objects load independently after a cache reset.
