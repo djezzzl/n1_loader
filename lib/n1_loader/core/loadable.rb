@@ -45,6 +45,7 @@ module N1Loader
     end
 
     def n1_clear_cache
+      @n1_binding = nil
       self.class.n1_loaders.each_key do |name|
         n1_loaders[name] = nil
       end
