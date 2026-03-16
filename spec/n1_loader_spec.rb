@@ -182,12 +182,32 @@ RSpec.describe N1Loader do
   end
 
   describe "loaded comparison" do
-    it "compares by value" do
+    it "compares by identity first" do
       instance = loader.new(objects)
 
+      expect(objects.first).to equal(objects.first)
       expect(instance.for(objects.first)).to eq([objects.first])
 
       expect { instance.for(object) }.to raise_error(N1Loader::NotLoaded)
+    end
+
+    it "falls back to equality comparison when no identity match" do
+      equal_klass = Struct.new(:id)
+
+      original = equal_klass.new(1)
+      equal_copy = equal_klass.new(1)
+
+      custom_loader = Class.new(N1Loader::Loader) do
+        def perform(elements)
+          elements.each { |element| fulfill(element, [element]) }
+        end
+      end
+
+      instance = custom_loader.new([original])
+
+      expect(original).not_to equal(equal_copy)
+      expect(instance.for(original)).to eq([original])
+      expect(instance.for(equal_copy)).to eq([original])
     end
   end
 
