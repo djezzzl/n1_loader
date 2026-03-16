@@ -1,3 +1,7 @@
+## [2.2.0] - 2026/03/16
+
+- Support both identity and equality comparison in `Loader#for`. Identity lookup (via `object_id`) is tried first, with equality lookup as a fallback. Thanks [Alfonso Uceda](https://github.com/AlfonsoUceda) for reporting the issue!
+
 ## [2.1.0] - 2026/03/07
 
 - Add `n1_bind_to` to support context sharing for plain Ruby objects without ActiveRecord, enabling N+1-free batch loading. Nested loading through N1Loader automatically propagates the shared context. Thanks [Pawel Pacana](https://github.com/paneq) for the feature request!
