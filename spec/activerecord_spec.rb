@@ -59,6 +59,14 @@ RSpec.describe "N1Loader ActiveRecord integration" do
           elements.each { |element| fulfill(element, [element, something]) }
         end
       end
+
+      n1_optimized :extra_data do
+        def perform(elements)
+          Entity.perform!
+
+          elements.each { |element| fulfill(element, [element, :extra]) }
+        end
+      end
     end)
 
     stub_const("Company", Class.new(ActiveRecord::Base) do
@@ -307,6 +315,61 @@ RSpec.describe "N1Loader ActiveRecord integration" do
           .and make_database_queries(matching: /companies/, count: 1)
           .and make_database_queries(count: 3)
           .and change(Company, :count).by(1)
+      end
+    end
+  end
+
+  context "with context binding" do
+    let(:objects) { [Entity.create!, Entity.create!] }
+
+    describe "n1_bind_to" do
+      it "returns correct data for each bound object" do
+        objects.each { |obj| obj.n1_bind_to(objects) }
+
+        expect(objects.first.data).to eq([objects.first])
+        expect(objects.last.data).to eq([objects.last])
+      end
+
+      it "loads all bound objects in a single batch" do
+        objects.each { |obj| obj.n1_bind_to(objects) }
+
+        expect { objects.map(&:data) }.to change(Entity, :count).by(1)
+      end
+
+      it "caches the result after the first load" do
+        objects.each { |obj| obj.n1_bind_to(objects) }
+
+        expect { objects.map(&:data) }.to change(Entity, :count).by(1)
+        expect { objects.map(&:data) }.not_to change(Entity, :count)
+      end
+
+      it "lazily loads when the first object is accessed" do
+        objects.each { |obj| obj.n1_bind_to(objects) }
+
+        expect { objects.first.data }.to change(Entity, :count).by(1)
+        expect { objects.last.data }.not_to change(Entity, :count)
+      end
+    end
+
+    describe "automatic context binding" do
+      it "automatically binds objects after loading via preloader" do
+        N1Loader::Preloader.new(objects).preload(:data)
+
+        # Accessing data triggers perform for all objects and auto-calls n1_bind_to
+        objects.first.data
+
+        # extra_data should now batch in a single perform call for all bound objects
+        expect { objects.map(&:extra_data) }.to change(Entity, :count).by(1)
+      end
+
+      it "does not trigger another load for siblings once auto-bound" do
+        N1Loader::Preloader.new(objects).preload(:data)
+
+        # First element access triggers auto-bind for the entire collection
+        objects.first.data
+
+        objects.first.extra_data
+        expect { objects.last.extra_data }.not_to change(Entity, :count)
       end
     end
   end
