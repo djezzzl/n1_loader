@@ -9,6 +9,7 @@ gemspec
 gemfiles = []
 gemfiles << "activerecord-gemfiles/#{ENV["ACTIVERECORD_GEMFILE"]}.gemfile" if ENV["ACTIVERECORD_GEMFILE"]
 gemfiles << "ar_lazy_preload-gemfiles/#{ENV["AR_LAZY_PRELOAD_GEMFILE"]}.gemfile" if ENV["AR_LAZY_PRELOAD_GEMFILE"]
+gemfiles << "goldiloader-gemfiles/#{ENV["GOLDILOADER_GEMFILE"]}.gemfile" if ENV["GOLDILOADER_GEMFILE"]
 
 gemfiles.each do |path|
   eval(File.read(path)) # rubocop:disable Security/Eval
