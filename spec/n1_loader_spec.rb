@@ -251,6 +251,22 @@ RSpec.describe N1Loader do
         expect { object.child_something }.not_to change(child_klass, :count)
       end
     end
+
+    context "with binding" do
+      it "clears binding so objects load independently after cache clear" do
+        objects.each { |obj| obj.n1_bind_to(objects) }
+
+        # Binding ensures the whole collection loads in one batch
+        expect { objects.first.inline }.to change(klass, :count).by(1)
+        expect { objects.last.inline }.not_to change(klass, :count)
+
+        objects.each(&:n1_clear_cache)
+
+        # After clearing cache and binding, each object loads independently
+        expect { objects.first.inline }.to change(klass, :count).by(1)
+        expect { objects.last.inline }.to change(klass, :count).by(1)
+      end
+    end
   end
 
   describe "arguments support" do
