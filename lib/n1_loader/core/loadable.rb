@@ -44,6 +44,10 @@ module N1Loader
       @n1_binding = collection
     end
 
+    def n1_bind_to?
+      !@n1_binding.nil?
+    end
+
     def n1_loader_reload(name)
       elements = @n1_binding || [self]
       collection = LoaderCollection.new(self.class.n1_loaders[name], elements)

@@ -2,6 +2,7 @@
 
 - Fix a rare thread-safety issue for setting context 
 - Raise errors if `n1_bind_to` received unexpected arguments
+- Fix context propagation to loaded objects when using `n1_bind_to`
 
 ## [2.2.0] - 2026/03/16
 
