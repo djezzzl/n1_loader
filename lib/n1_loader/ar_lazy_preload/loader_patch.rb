@@ -6,17 +6,22 @@ module N1Loader
     module LoaderPatch
       attr_accessor :context_setup
 
-      def loaded
-        return @loaded_by_identity if @already_loaded && @already_context
+      def loaded?
+        return true if @already_loaded && @already_context
 
         super
 
-        synchronize do
-          context_setup&.call(@loaded_by_identity.values.flatten) unless @already_context
-        end
+        synchronize { non_thread_safe_context_setting unless @already_context }
+
+        true
+      end
+
+      def non_thread_safe_context_setting
+        return if @already_context
+
+        context_setup&.call(loaded_by_identity.values.flatten)
 
         @already_context = true
-        @loaded_by_identity
       end
     end
   end

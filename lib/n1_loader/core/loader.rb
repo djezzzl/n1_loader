@@ -47,14 +47,14 @@ module N1Loader
     end
 
     def for(element)
-      identity_loaded = loaded
+      return unless loaded?
 
-      if identity_loaded.empty? && elements.any?
+      if loaded_by_identity.empty? && elements.any?
         raise NotFilled, "Nothing was preloaded, perhaps you forgot to use fulfill method"
       end
 
-      return identity_loaded[element] if identity_loaded.key?(element)
-      return @loaded_by_value[element] if @loaded_by_value.key?(element)
+      return loaded_by_identity[element] if loaded_by_identity.key?(element)
+      return loaded_by_value[element] if loaded_by_value.key?(element)
 
       raise NotLoaded, "The data was not preloaded for the given element"
     end
@@ -66,7 +66,7 @@ module N1Loader
 
     private
 
-    attr_reader :elements, :args
+    attr_reader :elements, :args, :loaded_by_value, :loaded_by_identity
 
     def check_missing_arguments!
       return unless (arguments = self.class.arguments)
@@ -107,22 +107,19 @@ module N1Loader
     end
 
     def fulfill(element, value)
-      @loaded_by_identity[element] = value
-      @loaded_by_value[element] = value
+      loaded_by_identity[element] = value
+      loaded_by_value[element] = value
     end
 
-    def ensure_loaded
-      return if @already_loaded
+    def loaded?
+      return true if @already_loaded
 
-      synchronize { non_thread_safe_loaded unless @already_loaded }
+      synchronize { non_thread_safe_loading unless @already_loaded }
+
+      true
     end
 
-    def loaded
-      ensure_loaded
-      @loaded_by_identity
-    end
-
-    def non_thread_safe_loaded # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def non_thread_safe_loading # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       return if @already_loaded
 
       check_arguments!
