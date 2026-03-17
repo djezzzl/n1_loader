@@ -33,6 +33,14 @@ module N1Loader
     end
 
     def n1_bind_to(collection)
+      unless collection.is_a?(Array) && collection.any? do |obj|
+        obj == self || obj.equal?(self)
+      end
+
+        raise InvalidBinding,
+              "assigned collection should be array and include object"
+      end
+
       @n1_binding = collection
     end
 

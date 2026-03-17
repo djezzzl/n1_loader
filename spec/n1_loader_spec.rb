@@ -482,6 +482,16 @@ RSpec.describe N1Loader do
       expect(objects.last.inline).to eq([objects.last])
     end
 
+    it "raises error if invalid collection was passed" do
+      expect do
+        objects.each { |obj| obj.n1_bind_to([]) }
+      end.to raise_error N1Loader::InvalidBinding
+
+      expect do
+        objects.first.n1_bind_to([objects.last])
+      end.to raise_error N1Loader::InvalidBinding
+    end
+
     it "loads all bound objects in a single batch" do
       objects.each { |obj| obj.n1_bind_to(objects) }
 

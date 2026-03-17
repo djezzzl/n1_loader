@@ -248,7 +248,6 @@ RSpec.describe "N1Loader ActiveRecord integration" do
       end
     end
 
-
     context "with arguments" do
       before { skip "unsupported by ArLazyPreload" if ar_lazy_preload_defined? }
 
