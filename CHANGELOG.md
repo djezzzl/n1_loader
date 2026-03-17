@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.2.1] - 2026/03/17
 
 - Fix a rare thread-safety issue for setting context 
 - Raise errors if `n1_bind_to` received unexpected arguments
