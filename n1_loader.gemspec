@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "activerecord", ">= 5"
   spec.add_development_dependency "ar_lazy_preload", ">= 0.6"
   spec.add_development_dependency "db-query-matchers", "~> 0.11"
+  spec.add_development_dependency "goldiloader", ">= 3"
   spec.add_development_dependency "graphql", "~> 2.0"
   spec.add_development_dependency "rails", ">= 5"
   spec.add_development_dependency "rspec", "~> 3.0"
