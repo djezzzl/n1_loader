@@ -233,6 +233,21 @@ RSpec.describe "N1Loader ActiveRecord integration" do
         .and change(Entity, :count).by(1)
     end
 
+    context "when preloading AR" do
+      let(:objects) { Entity.includes(:company) }
+
+      it "doesn't set context further for N1Loader" do
+        expect do
+          objects.each do |object|
+            expect(object.company.data).to eq(object)
+          end
+            .to make_database_queries(matching: /companies/, count: 1)
+            .and make_database_queries(matching: /entities/, count: 2)
+            .and make_database_queries(count: 3)
+        end
+      end
+    end
+
     context "with arguments" do
       before { skip "unsupported by ArLazyPreload" if ar_lazy_preload_defined? }
 

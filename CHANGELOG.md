@@ -1,3 +1,9 @@
+## [Unreleased]
+
+- Fix a rare thread-safety issue for setting context 
+- Raise errors if `n1_bind_to` received unexpected arguments
+- Fix context propagation to loaded objects when using `n1_bind_to`
+
 ## [2.2.0] - 2026/03/16
 
 - Support both identity and equality comparison in `Loader#for`. Identity lookup (via `object_id`) is tried first, with equality lookup as a fallback. Thanks [Alfonso Uceda](https://github.com/AlfonsoUceda) for reporting the issue!

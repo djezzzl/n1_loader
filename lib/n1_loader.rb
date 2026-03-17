@@ -15,4 +15,5 @@ module N1Loader # :nodoc:
   class NotFilled < Error; end
   class MissingArgument < Error; end
   class InvalidArgument < Error; end
+  class InvalidBinding < Error; end
 end
