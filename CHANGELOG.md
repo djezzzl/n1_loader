@@ -1,3 +1,7 @@
+## [Unreleased]
+
+- Add support of [Goldiloader](https://github.com/KentaaNL/goldiloader)
+
 ## [2.2.1] - 2026/03/17
 
 - Fix a rare thread-safety issue for setting context 

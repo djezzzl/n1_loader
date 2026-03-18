@@ -25,11 +25,13 @@ Follow me and stay tuned for the updates:
 
 ## Killer feature for GraphQL API
 
-N1Loader in combination with [ArLazyPreload][6] is a killer feature for your GraphQL API. 
+N1Loader in combination with [ArLazyPreload][6] or [Goldiloader][16] is a killer feature for your GraphQL API. 
 Give it a try now and see incredible results instantly! Check out the [example](examples/graphql.rb) and start benefiting from it in your projects!
 
 ```ruby
 gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
+# or
+gem 'n1_loader', require: 'n1_loader/goldiloader'
 ```
 
 ## Enhance [ActiveRecord][5]
@@ -41,10 +43,12 @@ Check out the detailed [guide](guides/enhanced-activerecord.md) with examples or
 gem 'n1_loader', require: 'n1_loader/active_record'
 ```
 
-Are you ready to forget about N+1 once and for all? Install [ArLazyPreload][6] and see dreams come true!
+Are you ready to forget about N+1 once and for all? Install [ArLazyPreload][6] or [Goldiloader][16] and see dreams come true!
 
 ```ruby
 gem 'n1_loader', require: 'n1_loader/ar_lazy_preload'
+# or
+gem 'n1_loader', require: 'n1_loader/goldiloader'
 ```
 
 ## Standalone mode
@@ -167,16 +171,17 @@ p User.all.includes(:payments_total).map { |user| user.payments_total(from: from
 - Loader support [arguments](examples/arguments_support.rb)
 - Has [integration](examples/active_record_integration.rb) with [ActiveRecord][5] which makes it brilliant
 - Has [integration](examples/ar_lazy_integration.rb) with [ArLazyPreload][6] which makes it excellent
+- Has [integration](examples/goldiloader_integration.rb) with [Goldiloader][16] which makes it excellent
 - Supports [context sharing](examples/n1_bind_to.rb) for plain Ruby objects without ActiveRecord
 
-### Feature killer for [ArLazyPreload][6] integration with isolated loaders
+### Feature killer for [ArLazyPreload][6] and [Goldiloader][16] integration with isolated loaders
 
 In [version 1.6.0](CHANGELOG.md#160---20221019) isolated loaders were integrated with [ArLazyPreload][6] context.
 This means, it isn't required to inject `N1Loader` into your [ActiveRecord][5] models to avoid N+1 issues out of the box.
 It is especially great as many engineers are trying to avoid extra coupling between their models/services when it's possible.
 And this feature was designed exactly for this without losing an out of a box solution for N+1.
 
-Without further ado, please have a look at the [example](examples/ar_lazy_integration_with_isolated_loader.rb).
+Without further ado, please have a look at the [example](examples/ar_lazy_integration_with_isolated_loader.rb) for ArLazyPreload or the [example](examples/goldiloader_integration_with_isolated_loader.rb) for Goldiloader.
 
 _Spoiler:_ as soon as you have your loader defined, it will be as simple as `Loader.for(element)` to get your data efficiently and without N+1.
 
@@ -296,3 +301,4 @@ Copyright (c) Evgeniy Demin. See [LICENSE.txt](LICENSE.txt) for further details.
 [13]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml/badge.svg?branch=master
 [14]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml?query=event%3Aschedule
 [15]: https://github.com/djezzzl/n1_loader#contributing
+[16]: https://github.com/KentaaNL/goldiloader

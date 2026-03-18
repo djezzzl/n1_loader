@@ -58,3 +58,6 @@ jobs:
 
       - name: Run ArLazyPreload tests
         run: bundle exec rspec spec/n1_loader_spec.rb spec/activerecord_spec.rb spec/ar_lazy_preload_spec.rb
+
+      - name: Run Goldiloader tests
+        run: bundle exec rspec spec/n1_loader_spec.rb spec/activerecord_spec.rb spec/ar_lazy_preload_spec.rb
