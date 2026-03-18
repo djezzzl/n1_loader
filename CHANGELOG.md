@@ -1,4 +1,4 @@
-## [Unreleased]
+## [3.0.0] - 2026/03/18
 
 - Add support of [Goldiloader](https://github.com/KentaaNL/goldiloader)
 
