@@ -301,4 +301,4 @@ Copyright (c) Evgeniy Demin. See [LICENSE.txt](LICENSE.txt) for further details.
 [13]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml/badge.svg?branch=master
 [14]: https://github.com/djezzzl/n1_loader/actions/workflows/rubocop.yml?query=event%3Aschedule
 [15]: https://github.com/djezzzl/n1_loader#contributing
-[16]: https://github.com/KentaaNL/goldiloader
+[16]: https://github.com/salsify/goldiloader
